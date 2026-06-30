@@ -108,6 +108,24 @@
   .hero h1 em{font-style:italic;color:var(--blue);}
   .hero .lede{margin:24px 0 0;font-size:19.5px;color:var(--body);max-width:36ch;}
   .hero .lede b{color:var(--ink-soft);font-weight:700;}
+  /* rotador de fuentes: Excel / ERP / papel */
+  .h1-lead{display:block;}
+  .rotator{position:relative;display:inline-flex;overflow:hidden;vertical-align:middle;height:1.3em;transition:width .35s var(--ease);}
+  .rotator-track{display:flex;flex-direction:column;align-items:flex-start;transition:transform .55s var(--ease);}
+  .chip{display:inline-flex;align-items:center;gap:.36em;white-space:nowrap;
+    font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;font-size:.5em;line-height:1.32;letter-spacing:-.01em;
+    padding:.28em .62em;border-radius:.46em;}
+  .chip svg{width:1.05em;height:1.05em;flex:none;}
+  .chip-excel{background:#1E7A46;color:#fff;}
+  .chip-ERP{background:#EA580C;color:#fff;}
+  .chip-paper{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:0 7px 18px -10px rgba(11,18,32,.38);}
+  .h1-photo{line-height:1.36;}
+  .hl-foto{color:var(--blue);font-weight:600;white-space:nowrap;}
+  .hl-foto svg{width:.74em;height:.74em;vertical-align:-.08em;margin-left:.16em;}
+  @media (prefers-reduced-motion: reduce){
+    .rotator{height:auto;width:auto!important;overflow:visible;}
+    .rotator-track{flex-direction:row;flex-wrap:wrap;gap:.34em;transform:none!important;}
+  }
   .hero-actions{display:flex;align-items:center;gap:20px;margin-top:34px;flex-wrap:wrap;}
   .btn-primary{display:inline-flex;align-items:center;gap:10px;background:var(--blue);color:#fff;
     padding:16px 26px;border-radius:12px;font-weight:700;font-size:16px;
@@ -346,9 +364,8 @@
   <header class="hero">
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <span class="eyebrow blue reveal">Una foto. Tus documentos, hechos.</span>
-        <h1 class="serif reveal" data-d="1">Crea tus documentos digitales con <em>una sola foto</em>.</h1>
-        <p class="lede reveal" data-d="2">Una foto a tu Excel, al papel o a cualquier ERP. DeCA lee la imagen, extrae los datos y <b>genera varios documentos de una vez</b>, con su QR.</p>
+        <h1 class="serif reveal h1-photo" data-d="1" aria-label="Pasa de Excel, tu ERP o papel a documentos digitales válidos por ley con una sola foto.">Haz una foto a tu <span class="rotator" id="rotator" aria-hidden="true"><span class="rotator-track" id="rotatorTrack"><span class="chip chip-excel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Excel</span><span class="chip chip-ERP"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>tu ERP</span><span class="chip chip-paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>papel</span></span></span> y crea documentos digitales transporte <span class="hl-foto"></h1>
+        <p class="lede reveal" data-d="2">DeCA lee la imagen, extrae los datos y genera los documentos de transporte digitales con QR.</p>
         <div class="hero-actions reveal" data-d="3">
           <a class="btn-primary" href="#empezar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -363,22 +380,22 @@
         <div class="phone">
           <span class="notch"></span>
           <div class="phone-screen">
-            <video src="./videos/deca-demo.mp4" poster="./images/deca-ui.png" autoplay muted loop playsinline preload="metadata" aria-label="DeCA en uso: crear el Documento de Control, escanear y firmar desde el móvil."></video>
+            <video src="./0630.mp4" poster="./images/deca-ui.png" autoplay muted loop playsinline preload="metadata" aria-label="DeCA en uso: crear el Documento de Control, escanear y firmar desde el móvil."></video>
           </div>
-          <span class="phone-tag t1"><span class="pin"></span>Propietario de la mercancía</span>
-          <span class="phone-tag t2"><span class="pin"></span>Transportista efectivo</span>
+          <!--<span class="phone-tag t1"><span class="pin"></span>Propietario de la mercancía</span>-->
+          <!--<span class="phone-tag t2"><span class="pin"></span>Transportista efectivo</span>-->
         </div>
       </div>
     </div>
   </header>
 
-  <!-- ANCHOR -->
+  <!-- ANCHOR 
   <section class="anchor wrap" aria-label="Idea central">
     <div class="spine reveal" aria-hidden="true"></div>
     <p class="reveal" data-d="1">Le haces una <em>foto</em>. DeCA hace <b>el resto</b>.</p>
-  </section>
+  </section>-->
 
-  <!-- PROBLEMA -->
+  <!-- PROBLEMA 
   <section class="section problem">
     <div class="wrap">
       <div class="section-head">
@@ -397,14 +414,14 @@
         </div>
       </div>
     </div>
-  </section>
+  </section>-->
 
   <!-- LEY -->
   <section class="section law" id="ley">
     <div class="wrap">
       <div class="section-head">
         <span class="eyebrow blue reveal">Qué exige la ley</span>
-        <h2 class="serif reveal" data-d="1">La norma, sin lenguaje jurídico.</h2>
+        <h2 class="serif reveal" data-d="1">Lo que debes saber.</h2>
       </div>
       <div class="law-grid">
         <div class="law-points reveal" data-d="1">
@@ -413,7 +430,7 @@
             <div><h4>El documento pasa a ser digital</h4><p>La Ley de Movilidad Sostenible obliga a digitalizar el Documento de Control.</p></div>
           </div>
           <div class="law-point">
-            <span class="yr">Otoño 2026</span>
+            <span class="yr">6 Oct 2026</span>
             <div><h4>El papel deja de valer</h4><p>A los diez meses de la entrada en vigor de la ley. Ya no sirve en papel.</p></div>
           </div>
           <div class="law-point">
@@ -429,7 +446,7 @@
           <h4>Dos partes, dos colores</h4>
           <p>La ley nombra a dos obligados: el <strong style="color:var(--amber-ink)">cargador</strong> —quien encarga el envío— y el <strong style="color:var(--blue-ink)">transportista</strong> —quien lo lleva—. DeCA separa sus datos con ese mismo código de color.</p>
           <div class="who">
-            <span>Autónomos 1–5 vehículos</span>
+            <span>Autónomos</span>
             <span>PYMES familiares</span>
             <span>Pequeñas flotas</span>
             <span>Cargadores</span>
@@ -573,7 +590,7 @@
     </div>
   </section>
 
-  <!-- BENEFICIOS -->
+  <!-- BENEFICIOS 
   <section class="section benefits">
     <div class="wrap">
       <div class="section-head">
@@ -599,7 +616,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </section>-->
 
   <!-- EMPEZAR -->
   <section class="section" id="empezar">
@@ -672,6 +689,33 @@
     }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
     els.forEach(function(el){ io.observe(el); });
   }
+
+  // rotador de fuentes (Excel / ERP / papel) — ancho fijo, va en mitad de la frase
+  (function(){
+    var rotator = document.getElementById('rotator');
+    var track = document.getElementById('rotatorTrack');
+    if(!rotator || !track) return;
+    var chips = Array.prototype.slice.call(track.children);
+    if(prefersReduced || chips.length < 2) return; // el fallback CSS muestra los tres
+    var i = 0;
+    function fix(){
+      track.style.transition = 'none';
+      var h = chips[0].offsetHeight, w = 0;
+      chips.forEach(function(c){ if(c.offsetWidth > w) w = c.offsetWidth; });
+      rotator.style.height = h + 'px';
+      rotator.style.width = w + 'px';
+      track.style.transform = 'translateY(' + (-i * h) + 'px)';
+      requestAnimationFrame(function(){ track.style.transition = ''; });
+    }
+    function go(idx){
+      var h = chips[0].offsetHeight;
+      track.style.transform = 'translateY(' + (-idx * h) + 'px)';
+    }
+    if(document.fonts && document.fonts.ready){ document.fonts.ready.then(fix); }
+    setTimeout(fix, 80);
+    window.addEventListener('resize', fix);
+    setInterval(function(){ i = (i + 1) % chips.length; go(i); }, 2200);
+  })();
 </script>
 </body>
 </html>
