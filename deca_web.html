@@ -203,8 +203,22 @@
   .law-aside{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:30px;}
   .law-aside h4{font-family:"Fraunces",serif;font-weight:500;font-size:22px;color:var(--ink);margin:0 0 14px;letter-spacing:-.01em;}
   .law-aside p{font-size:15.5px;margin:0 0 14px;color:var(--body);}
-  .law-aside .who{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px;}
-  .law-aside .who span{font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  .law-aside .parties{display:grid;gap:10px;margin:18px 0 24px;}
+  .law-aside .party{position:relative;display:flex;align-items:baseline;flex-wrap:wrap;gap:5px 12px;
+    padding:13px 16px;border:1px solid var(--line);border-radius:12px;}
+  .law-aside .party::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:3px;}
+  .law-aside .party.amber{background:var(--amber-wash);}
+  .law-aside .party.amber::before{background:var(--amber);}
+  .law-aside .party.blue{background:var(--blue-wash);}
+  .law-aside .party.blue::before{background:var(--blue);}
+  .law-aside .party .role{font-family:"Fraunces",serif;font-weight:600;font-size:16px;letter-spacing:-.01em;}
+  .law-aside .party.amber .role{color:var(--amber-ink);}
+  .law-aside .party.blue .role{color:var(--blue-ink);}
+  .law-aside .party .desc{font-size:13.5px;color:var(--body);}
+  .law-aside .who{display:flex;flex-direction:column;gap:11px;margin-top:0;}
+  .law-aside .who-label{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);}
+  .law-aside .who-chips{display:flex;flex-wrap:wrap;gap:9px;}
+  .law-aside .who-chips span{font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
     border:1px solid var(--line);border-radius:999px;padding:7px 13px;color:var(--ink-soft);}
   .src{margin-top:30px;font-size:12.5px;color:var(--faint);letter-spacing:.01em;}
   .src b{color:var(--muted);font-weight:700;}
@@ -227,8 +241,10 @@
     box-shadow:0 30px 60px -34px rgba(11,18,32,.4);background:#fff;}
   .ui-detail .bar{height:38px;background:#fff;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:7px;padding:0 15px;}
   .ui-detail .bar i{width:10px;height:10px;border-radius:50%;background:var(--line);display:inline-block;}
-  .ui-detail .shot{height:360px;overflow:hidden;background:#F5F7FA;}
-  .ui-detail .shot img{width:100%;height:100%;object-fit:cover;object-position:top center;}
+  .ui-detail .shot{height:430px;overflow:hidden;background:#fff;}
+  .ui-detail .shot img{width:100%;height:100%;object-fit:cover;object-position:top center;
+    -webkit-mask-image:linear-gradient(180deg,#000 70%,transparent 100%);
+    mask-image:linear-gradient(180deg,#000 70%,transparent 100%);}
   .ui-caption{margin-top:16px;font-size:13.5px;color:var(--muted);display:flex;align-items:center;gap:9px;}
   .ui-caption .pin{width:7px;height:7px;border-radius:50%;background:var(--blue);}
   @media(max-width:880px){.steps{grid-template-columns:1fr;gap:38px;}.steps-visual{order:-1;}}
@@ -364,8 +380,8 @@
   <header class="hero">
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <h1 class="serif reveal h1-photo" data-d="1" aria-label="Pasa de Excel, tu ERP o papel a documentos digitales válidos por ley con una sola foto.">Haz una foto a tu <span class="rotator" id="rotator" aria-hidden="true"><span class="rotator-track" id="rotatorTrack"><span class="chip chip-excel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Excel</span><span class="chip chip-ERP"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>tu ERP</span><span class="chip chip-paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>papel</span></span></span> y crea documentos digitales transporte <span class="hl-foto"></h1>
-        <p class="lede reveal" data-d="2">DeCA lee la imagen, extrae los datos y genera los documentos de transporte digitales con QR.</p>
+        <h1 class="serif reveal h1-photo" data-d="1" aria-label="Pasa de Excel, tu ERP o papel a documentos digitales válidos por ley con una sola foto.">Una sola foto a tu <span class="rotator" id="rotator" aria-hidden="true"><span class="rotator-track" id="rotatorTrack"><span class="chip chip-excel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Excel</span><span class="chip chip-ERP"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>ERP</span><span class="chip chip-paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Papel</span></span></span> para crear tus documentos digitales de transporte</h1>
+        <!--<p class="lede reveal" data-d="2">DeCA lee la imagen, extrae los datos y genera los documentos de transporte digitales con QR.</p>-->
         <div class="hero-actions reveal" data-d="3">
           <a class="btn-primary" href="#empezar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -373,7 +389,7 @@
           </a>
           <a class="link-ghost" href="#como">Ver cómo funciona →</a>
         </div>
-        <p class="hero-note reveal" data-d="4"><span class="dot"></span> Obligatorio en digital desde otoño de 2026 · Ley 9/2025</p>
+        <p class="hero-note reveal" data-d="4"><span class="dot"></span> Obligatorio en digital desde otoño de 2026· Ley 9/2025</p>
       </div>
 
       <div class="phone-stage reveal" data-d="2">
@@ -443,13 +459,26 @@
           </div>
         </div>
         <aside class="law-aside reveal" data-d="2">
-          <h4>Dos partes, dos colores</h4>
-          <p>La ley nombra a dos obligados: el <strong style="color:var(--amber-ink)">cargador</strong> —quien encarga el envío— y el <strong style="color:var(--blue-ink)">transportista</strong> —quien lo lleva—. DeCA separa sus datos con ese mismo código de color.</p>
+          <h4>Tanto el Cargador como el transportista estan obligados</h4>
+          <p>La ley nombra a dos obligados, ambos deben guardar los documentos durante 1 año</p>
+          <div class="parties">
+            <div class="party amber">
+              <span class="role">Cargador</span>
+              <span class="desc">Quien carga el envío</span>
+            </div>
+            <div class="party blue">
+              <span class="role">Transportista</span>
+              <span class="desc">Quien lo lleva</span>
+            </div>
+          </div>
           <div class="who">
-            <span>Autónomos</span>
-            <span>PYMES familiares</span>
-            <span>Pequeñas flotas</span>
-            <span>Cargadores</span>
+            <span class="who-label">Para quién</span>
+            <div class="who-chips">
+              <span>Autónomos</span>
+              <span>PYMES familiares</span>
+              <span>Pequeñas y grandes flotas</span>
+              <span>Cargadores</span>
+            </div>
           </div>
           <p class="src"><b>Fuentes:</b> Orden FOM/2861/2012 · Ley 9/2025 · Resolución de 5 jun 2026 (BOE-A-2026-12784).</p>
         </aside>
@@ -492,56 +521,15 @@
           <div class="ui-detail">
             <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
             <div class="shot">
-              <img src="./images/deca-ui.png" alt="Detalle del formulario de DeCA: botones Escanear y Adjuntar arriba, y los campos del Propietario de la mercancía —Nombre, NIF, Domicilio, Naturaleza y Peso— con su barra lateral ámbar." loading="lazy" width="970" height="1291" />
+              <img src="./deca-documento.png" alt="Documento de Control de Transporte generado por DeCA: carta de porte electrónica con código QR, y los datos del cargador contractual, el transportista efectivo, el envío y la mercancía." loading="lazy" width="1654" height="2339" />
             </div>
           </div>
-          <p class="ui-caption"><span class="pin"></span> La app real: aquí revisas los datos que DeCA ha extraído de la foto, antes de generar.</p>
+          <p class="ui-caption"><span class="pin"></span> El documento que genera DeCA: carta de porte electrónica con su QR, lista para la inspección.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- MOMENTO DOMINANTE -->
-  <section class="control" aria-label="En el control de carretera">
-    <div class="wrap control-in">
-      <div class="control-copy">
-        <span class="eyebrow reveal">El momento que importa</span>
-        <h2 class="reveal" data-d="1">En el control, todo se reduce a <em>un código</em>.</h2>
-        <p class="copy reveal" data-d="2">El agente escanea el QR. <b>El PDF se descarga solo</b>, sin login. Tú sigues tu ruta.</p>
-        <div class="meta reveal" data-d="3">
-          <span>URL única https://</span>
-          <span>Descarga directa del PDF</span>
-          <span>Válida durante todo el servicio</span>
-        </div>
-      </div>
-      <div class="qr-card reveal" data-d="2" aria-hidden="true">
-        <svg class="qr" viewBox="0 0 100 100" role="img" aria-label="Código QR ilustrativo">
-          <rect width="100" height="100" fill="#fff"/>
-          <g fill="#0B1220">
-            <!-- finders -->
-            <path d="M6 6h22v22H6z M11 11h12v12H11z" fill-rule="evenodd"/>
-            <path d="M72 6h22v22H72z M77 11h12v12H77z" fill-rule="evenodd"/>
-            <path d="M6 72h22v22H6z M11 77h12v12H11z" fill-rule="evenodd"/>
-            <!-- modules -->
-            <rect x="34" y="6" width="5" height="5"/><rect x="44" y="6" width="5" height="5"/><rect x="56" y="6" width="5" height="5"/>
-            <rect x="34" y="16" width="5" height="5"/><rect x="50" y="16" width="5" height="5"/><rect x="62" y="16" width="5" height="5"/>
-            <rect x="40" y="22" width="5" height="5"/><rect x="56" y="22" width="5" height="5"/>
-            <rect x="6" y="34" width="5" height="5"/><rect x="18" y="34" width="5" height="5"/><rect x="34" y="34" width="5" height="5"/><rect x="46" y="34" width="5" height="5"/><rect x="62" y="34" width="5" height="5"/><rect x="78" y="34" width="5" height="5"/><rect x="90" y="34" width="4" height="5"/>
-            <rect x="12" y="42" width="5" height="5"/><rect x="28" y="42" width="5" height="5"/><rect x="40" y="42" width="5" height="5"/><rect x="56" y="42" width="5" height="5"/><rect x="72" y="42" width="5" height="5"/><rect x="84" y="42" width="5" height="5"/>
-            <rect x="6" y="50" width="5" height="5"/><rect x="22" y="50" width="5" height="5"/><rect x="34" y="50" width="5" height="5"/><rect x="50" y="50" width="5" height="5"/><rect x="66" y="50" width="5" height="5"/><rect x="78" y="50" width="5" height="5"/><rect x="90" y="50" width="4" height="5"/>
-            <rect x="16" y="58" width="5" height="5"/><rect x="40" y="58" width="5" height="5"/><rect x="52" y="58" width="5" height="5"/><rect x="62" y="58" width="5" height="5"/><rect x="84" y="58" width="5" height="5"/>
-            <rect x="6" y="66" width="5" height="5"/><rect x="34" y="66" width="5" height="5"/><rect x="46" y="66" width="5" height="5"/><rect x="58" y="66" width="5" height="5"/><rect x="72" y="66" width="5" height="5"/><rect x="90" y="66" width="4" height="5"/>
-            <rect x="34" y="74" width="5" height="5"/><rect x="50" y="74" width="5" height="5"/><rect x="66" y="74" width="5" height="5"/><rect x="84" y="74" width="5" height="5"/>
-            <rect x="40" y="82" width="5" height="5"/><rect x="56" y="82" width="5" height="5"/><rect x="72" y="82" width="5" height="5"/><rect x="88" y="82" width="5" height="5"/>
-            <rect x="34" y="90" width="5" height="4"/><rect x="48" y="90" width="5" height="4"/><rect x="62" y="90" width="5" height="4"/><rect x="78" y="90" width="5" height="4"/>
-          </g>
-        </svg>
-        <div class="label"><div class="t">Documento de Control</div><div class="s">Escanear para descargar el PDF</div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CUMPLIMIENTO -->
   <section class="section" id="cumple">
     <div class="wrap">
       <div class="section-head">
@@ -635,7 +623,7 @@
           </div>
           <div class="start-steps reveal" data-d="2">
             <div class="start-step"><span class="n">1</span><div class="x"><b>Empieza con una foto</b><p>A un Excel, ERP o papel real tuyo.</p></div></div>
-            <div class="start-step"><span class="n">2</span><div class="x"><b>Decide el alcance</b><p>Solo el documento de control, o también cartas de porte.</p></div></div>
+            <div class="start-step"><span class="n">2</span><div class="x"><b>Decide el alcance</b><p>Solo el documento de control</p></div></div>
             <div class="start-step"><span class="n">3</span><div class="x"><b>Crece cuando quieras</b><p>Usuarios y vehículos, sin permanencias.</p></div></div>
           </div>
         </div>
