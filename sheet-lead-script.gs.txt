@@ -1,0 +1,20 @@
+// Pega este código en: tu Google Sheet > Extensiones > Apps Script > Code.gs
+// Luego: Implementar > Nueva implementación > Tipo: Aplicación web
+//   Ejecutar como: Yo
+//   Quién tiene acceso: Cualquier usuario
+// Copia la URL que termina en /exec y pégala en GOOGLE_SCRIPT_URL dentro de index.html
+
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var d = e.parameter;
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['Fecha', 'Nombre', 'Empresa', 'Email', 'Teléfono']);
+  }
+
+  sheet.appendRow([new Date(), d.nombre, d.empresa, d.email, d.telefono]);
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ result: 'success' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
