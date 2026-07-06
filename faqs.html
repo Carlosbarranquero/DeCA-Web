@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documento de Control Administrativo digital — Preguntas frecuentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#131A22;
+    --ink-soft:#3B4652;
+    --paper:#EEF1F2;
+    --card:#FFFFFF;
+    --line:#D7DDE1;
+    --blue:#18538C;      /* accent principal: institucional, confianza */
+    --blue-deep:#0F3A63;
+    --amber:#E9A318;     /* signature: guiño al QR / señalética */
+    --amber-ink:#5A3E00;
+    --radius:14px;
+    --maxw:920px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px;}
+
+  /* ---------- HERO ---------- */
+  header.hero{
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(233,163,24,.14), transparent 55%),
+      linear-gradient(180deg,var(--blue-deep),var(--blue));
+    color:#fff;
+    padding:64px 0 56px;
+    position:relative;
+    overflow:hidden;
+  }
+  /* signature: motivo esquina-QR */
+  .qr-mark{
+    position:absolute;right:26px;top:26px;width:74px;height:74px;
+    opacity:.9;
+  }
+  .hero .eyebrow{
+    font-family:"Archivo",sans-serif;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;font-size:.72rem;color:#BFE0FF;margin:0 0 14px;
+    display:inline-flex;align-items:center;gap:9px;
+  }
+  .hero .eyebrow::before{content:"";width:26px;height:2px;background:var(--amber);display:inline-block;}
+  .hero h1{
+    font-family:"Archivo",sans-serif;font-weight:800;
+    font-size:clamp(2rem,5vw,3.1rem);line-height:1.05;margin:0 0 16px;letter-spacing:-.02em;
+    max-width:16ch;
+  }
+  .hero p.lead{font-size:1.08rem;color:#DCEAF7;max-width:56ch;margin:0 0 8px;}
+  .hero .date-chip{
+    display:inline-flex;align-items:center;gap:8px;margin-top:22px;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+    padding:8px 14px;border-radius:999px;font-size:.86rem;font-weight:500;color:#fff;
+  }
+  .hero .date-chip b{color:var(--amber);font-family:"Archivo",sans-serif;}
+
+  /* ---------- CTA PRODUCTO (hero) ---------- */
+  .product-cta{
+    margin-top:30px;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.2);border-radius:var(--radius);
+    padding:20px 22px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;
+  }
+  .product-cta .txt{max-width:46ch;}
+  .product-cta .txt strong{font-family:"Archivo",sans-serif;color:#fff;}
+  .product-cta .txt span{display:block;color:#CFE2F2;font-size:.93rem;margin-top:2px;}
+  .btn{
+    font-family:"Archivo",sans-serif;font-weight:700;font-size:.95rem;
+    background:var(--amber);color:var(--amber-ink);text-decoration:none;
+    padding:13px 22px;border-radius:10px;white-space:nowrap;
+    transition:transform .12s ease, box-shadow .12s ease;
+    box-shadow:0 6px 18px rgba(233,163,24,.28);
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(233,163,24,.36);}
+
+  /* ---------- NAV TEMAS ---------- */
+  nav.topics{
+    position:sticky;top:0;z-index:20;background:rgba(238,241,242,.9);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  }
+  nav.topics .wrap{display:flex;gap:8px;overflow-x:auto;padding:12px 22px;}
+  nav.topics a{
+    flex:0 0 auto;font-size:.83rem;font-weight:600;color:var(--ink-soft);
+    text-decoration:none;padding:7px 13px;border-radius:999px;border:1px solid var(--line);
+    background:#fff;white-space:nowrap;transition:.15s;
+  }
+  nav.topics a:hover{color:var(--blue);border-color:var(--blue);}
+
+  /* ---------- SECCIONES ---------- */
+  main{padding:52px 0 30px;}
+  .group{margin-bottom:48px;scroll-margin-top:70px;}
+  .group-head{display:flex;align-items:baseline;gap:14px;margin:0 0 20px;}
+  .group-num{
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:.9rem;color:var(--amber);
+    border:2px solid var(--amber);border-radius:8px;padding:3px 9px;line-height:1;flex:0 0 auto;
+  }
+  .group-head h2{
+    font-family:"Archivo",sans-serif;font-weight:700;font-size:1.4rem;margin:0;
+    letter-spacing:-.01em;color:var(--ink);
+  }
+
+  /* ---------- TARJETA FAQ (details) ---------- */
+  details.faq{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    margin-bottom:12px;overflow:hidden;transition:border-color .15s, box-shadow .15s;
+  }
+  details.faq[open]{border-color:var(--blue);box-shadow:0 8px 26px rgba(19,26,34,.08);}
+  summary{
+    list-style:none;cursor:pointer;padding:18px 54px 18px 20px;position:relative;
+    font-family:"Archivo",sans-serif;font-weight:600;font-size:1.03rem;color:var(--ink);
+    display:block;
+  }
+  summary::-webkit-details-marker{display:none;}
+  summary::after{
+    content:"";position:absolute;right:22px;top:50%;width:11px;height:11px;
+    border-right:2.4px solid var(--blue);border-bottom:2.4px solid var(--blue);
+    transform:translateY(-70%) rotate(45deg);transition:transform .2s ease;
+  }
+  details.faq[open] summary::after{transform:translateY(-30%) rotate(-135deg);}
+  summary:focus-visible{outline:3px solid var(--amber);outline-offset:-3px;border-radius:var(--radius);}
+  .answer{padding:0 20px 20px;color:var(--ink-soft);font-size:.98rem;}
+  .answer p{margin:0 0 12px;}
+  .answer p:last-child{margin-bottom:0;}
+
+  /* mención de producto dentro de la respuesta */
+  .plug{
+    display:flex;gap:11px;align-items:flex-start;margin-top:14px;
+    background:#FBF6EB;border:1px solid #F0DFB4;border-left:3px solid var(--amber);
+    border-radius:10px;padding:12px 14px;color:var(--amber-ink);font-size:.93rem;
+  }
+  .plug svg{flex:0 0 auto;margin-top:1px;}
+  .plug a{color:var(--blue-deep);font-weight:600;}
+
+  .ref{font-size:.8rem;color:#8894A0;margin-top:12px;font-style:italic;}
+
+  /* ---------- CTA final ---------- */
+  .final-cta{
+    background:var(--ink);color:#fff;border-radius:var(--radius);
+    padding:38px 30px;text-align:center;margin:10px 0 0;
+  }
+  .final-cta h2{font-family:"Archivo",sans-serif;font-weight:800;font-size:1.55rem;margin:0 0 10px;letter-spacing:-.01em;}
+  .final-cta p{color:#B9C4CE;max-width:52ch;margin:0 auto 22px;}
+  .final-cta .btn{box-shadow:0 6px 18px rgba(233,163,24,.22);}
+
+  footer{padding:30px 0 46px;color:#7A8791;font-size:.82rem;}
+  footer a{color:var(--blue);}
+
+  @media (max-width:560px){
+    .product-cta{flex-direction:column;align-items:stretch;}
+    .btn{text-align:center;}
+    summary{font-size:.98rem;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{scroll-behavior:auto;transition:none!important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <!-- signature QR -->
+    <svg class="qr-mark" viewBox="0 0 74 74" fill="none" aria-hidden="true">
+      <rect x="1" y="1" width="20" height="20" rx="3" stroke="#E9A318" stroke-width="3"/>
+      <rect x="53" y="1" width="20" height="20" rx="3" stroke="#E9A318" stroke-width="3"/>
+      <rect x="1" y="53" width="20" height="20" rx="3" stroke="#E9A318" stroke-width="3"/>
+      <rect x="8" y="8" width="6" height="6" fill="#fff"/>
+      <rect x="60" y="8" width="6" height="6" fill="#fff"/>
+      <rect x="8" y="60" width="6" height="6" fill="#fff"/>
+      <rect x="30" y="4" width="5" height="5" fill="#fff"/><rect x="40" y="4" width="5" height="5" fill="#fff"/>
+      <rect x="30" y="14" width="5" height="5" fill="#fff"/><rect x="53" y="30" width="5" height="5" fill="#fff"/>
+      <rect x="63" y="30" width="5" height="5" fill="#fff"/><rect x="53" y="40" width="5" height="5" fill="#fff"/>
+      <rect x="30" y="30" width="5" height="5" fill="#E9A318"/><rect x="40" y="40" width="5" height="5" fill="#E9A318"/>
+      <rect x="30" y="53" width="5" height="5" fill="#fff"/><rect x="40" y="63" width="5" height="5" fill="#fff"/>
+    </svg>
+
+    <p class="eyebrow">Documento de Control Administrativo digital</p>
+    <h1>Preguntas frecuentes sobre el DCA digital</h1>
+    <p class="lead">Respuestas claras, basadas en la normativa y en el webinar del Ministerio de Transportes, sobre la obligación que afecta a todo el transporte público de mercancías por carretera.</p>
+    <span class="date-chip">Obligatorio desde el <b>5 de octubre</b></span>
+
+    <div class="product-cta">
+      <div class="txt">
+        <strong>[TU PRODUCTO]</strong>
+        <span>Genera el documento de control digital a partir de una foto de tu albarán o carta de porte.</span>
+      </div>
+      <a class="btn" href="[ENLACE / CTA]">Empieza ahora</a>
+    </div>
+  </div>
+</header>
+
+<nav class="topics" aria-label="Temas">
+  <div class="wrap">
+    <a href="#g1">Formato y cómo se lleva</a>
+    <a href="#g2">Quién es responsable</a>
+    <a href="#g3">Cuándo se genera y datos</a>
+    <a href="#g4">Casos particulares y exenciones</a>
+    <a href="#g5">Futuro, EFTI y transición</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- ================= GRUPO 1 ================= -->
+  <section class="group" id="g1">
+    <div class="group-head"><span class="group-num">01</span><h2>Qué documento vale y cómo se lleva</h2></div>
+
+    <details class="faq">
+      <summary>¿Me sirve mi albarán como documento de control?</summary>
+      <div class="answer">
+        <p>Sí, siempre que ese albarán incorpore un código QR que enlace a un repositorio tuyo desde el que el agente de control pueda descargarlo, y que contenga los datos que exige el artículo 6 de la Orden FOM/2861 (cargador contractual, transportista efectivo, origen, destino, etc.). La idea del sistema es precisamente reutilizar los documentos y datos que ya manejas, no crear papeleo nuevo.</p>
+        <div class="plug">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="#E9A318" stroke-width="2" stroke-linecap="round"/></svg>
+          <div>Con <strong>[TU PRODUCTO]</strong> conviertes una foto de tu albarán en el PDF del documento de control, aprovechando los datos que ya tienes. <a href="[ENLACE / CTA]">Ver cómo funciona →</a></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>¿Dónde están los requisitos para digitalizar mi carta de porte?</summary>
+      <div class="answer">
+        <p>Conviene aclarar una cosa: la obligación es digitalizar el documento de control, no la carta de porte. Si quieres que tu carta de porte digital sirva como documento de control, además de sus datos habituales debe cumplir los requisitos de la Orden FOM/2861/2012 (mercancías), la Orden FOM/1230/2013 (hoja de ruta) y la Resolución de 5 de junio de 2026.</p>
+        <p>Cumpliendo esas condiciones, un mismo documento te vale para las dos cosas y no necesitas duplicar papeleo.</p>
+        <div class="plug">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="#E9A318" stroke-width="2" stroke-linecap="round"/></svg>
+          <div><strong>[TU PRODUCTO]</strong> parte de la carta de porte que ya usas y genera el documento de control digital a partir de una foto. <a href="[ENLACE / CTA]">Probar →</a></div>
+        </div>
+        <p class="ref">Ref.: la obligación es sobre el documento de control, no sobre la carta de porte.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>¿Puedo llevar el documento en papel si lleva QR?</summary>
+      <div class="answer">
+        <p>Sí. Puedes llevarlo en papel con su QR, en un dispositivo digital o en ambos formatos a la vez. El papel tiene la ventaja de no depender de la cobertura, pero el inconveniente de que no recoge las modificaciones que sufra el envío después de imprimirlo.</p>
+        <p>Por eso, si los datos cambian a menudo, es más seguro el formato digital: el documento va descargado en el dispositivo del conductor, así que no se descarga en el momento del control y no depende de que haya cobertura justo entonces.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>¿Hay que llevar dos documentos (uno del cargador y otro del transportista) o solo uno?</summary>
+      <div class="answer">
+        <p>Debe existir un único documento de control, no uno por cada parte. Cargador y transportista acuerdan libremente quién lo genera y cómo se hace llegar al conductor, que lleva a bordo una copia obtenida del repositorio.</p>
+        <p>¿Y si el cargador no lo envía? Como la responsabilidad es solidaria, si una parte no colabora ambas siguen expuestas a sanción. Lo habitual es pactar quién lo emite: uno de los dos, de mutuo acuerdo, o un tercero contratado.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>¿Cada parte necesita su propio repositorio o basta con uno?</summary>
+      <div class="answer">
+        <p>Basta con uno. Como el documento de control es único, su QR apunta a un solo repositorio, y cargador y transportista acuerdan de quién es: de uno de ellos o de un tercero, como un proveedor de software.</p>
+        <p>No es necesario que cada figura mantenga su propio repositorio; el QR debe llevar a un único destino, no a varios.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ================= GRUPO 2 ================= -->
+  <section class="group" id="g2">
+    <div class="group-head"><span class="group-num">02</span><h2>Quién está obligado y responsabilidades</h2></div>
+
+    <details class="faq">
+      <summary>¿Quién es el cargador contractual y quién está obligado al documento?</summary>
+      <div class="answer">
+        <p>El transportista efectivo es la empresa cuyo vehículo se detiene en el control. El cargador contractual es quien ha contratado directamente a ese transportista, es decir, el eslabón inmediatamente anterior en la cadena, no necesariamente el origen de toda la operación.</p>
+        <p>Ambos son responsables solidarios de que exista el documento de control: si falta, se sanciona a los dos. Cuando lo que falla es un dato concreto, el artículo 7 de la Orden FOM/2861 reparte la responsabilidad según quién conoce cada dato (por ejemplo, la matrícula corresponde al transportista efectivo).</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Si el cliente contrata el transporte y nosotros solo cargamos, ¿quién formaliza el documento?</summary>
+      <div class="answer">
+        <p>El obligado es el transportista efectivo junto con el cargador contractual, que aquí es el cliente que contrató el transporte, aunque la carga se realice en las instalaciones del expedidor y la mercancía sea de otra empresa. Si el expedidor no es cargador contractual, no tiene responsabilidad sobre el documento de control.</p>
+        <p>La norma tampoco obliga al expedidor a comprobar que el documento existe ni a impedir la salida del vehículo. Puede incorporar esa verificación a sus procesos internos de calidad si lo desea, pero es voluntario.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ================= GRUPO 3 ================= -->
+  <section class="group" id="g3">
+    <div class="group-head"><span class="group-num">03</span><h2>Cuándo se genera y datos del envío</h2></div>
+
+    <details class="faq">
+      <summary>¿Necesito el documento antes de recoger la carga, si aún no conozco la mercancía ni el destino?</summary>
+      <div class="answer">
+        <p>No puedes generar el documento hasta que conozcas los datos del envío. Si al dirigirte al punto de carga ya sabes qué vas a transportar, puedes emitirlo desde ese momento; si no, lo generas al cargar, que es cuando esos datos se conocen.</p>
+        <p>El momento límite para tenerlo es el inicio del servicio, una vez cargado el vehículo: ahí, quien carga sabe qué se está cargando, así que los datos siempre existen a más tardar en ese instante.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>¿Qué hago si en el punto de carga no hay cobertura o no conozco la mercancía hasta llegar?</summary>
+      <div class="answer">
+        <p>Si no hay cobertura en el punto de carga, puedes generar el documento en papel con su QR en ese momento, o emitirlo antes y enviárselo al conductor (por WhatsApp, correo…) para actualizarlo al salir de la zona sin cobertura.</p>
+        <p>Y si no conoces la mercancía hasta cargar, el documento se genera en ese momento: el instante límite para emitirlo es la propia carga del vehículo, cuando ya se conocen todos los datos.</p>
+        <div class="plug">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="#E9A318" stroke-width="2" stroke-linecap="round"/></svg>
+          <div>Con <strong>[TU PRODUCTO]</strong> generas el documento en el propio punto de carga a partir de una foto y se lo haces llegar al conductor al momento. <a href="[ENLACE / CTA]">Ver cómo →</a></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Si no puedo conocer el peso antes de cargar, ¿qué magnitud indico?</summary>
+      <div class="answer">
+        <p>La Orden FOM/2861 permite que, cuando no se pueda determinar el peso, se use otra magnitud para expresar la mercancía transportada: volumen, número de palés, masa máxima o medidas de capacidad, según la naturaleza de la carga.</p>
+        <p>En general, lo que ya vengas indicando en tu documento de control actual es lo que debes trasladar a su versión digital.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Si el envío se modifica, ¿hay que generar un QR nuevo? ¿Y actualizar el papel?</summary>
+      <div class="answer">
+        <p>Según el punto quinto de la Resolución de 5 de junio de 2026, ante una modificación puedes mantener el mismo QR o generar uno nuevo. En ambos casos debes hacer llegar al transportista el PDF actualizado.</p>
+        <p>Si lleva dispositivo digital, se le envía (por WhatsApp, correo…); si va en papel, hay que hacerle llegar el papel actualizado, lo cual es más complicado. Por eso, si prevés modificaciones frecuentes, es más práctico el formato digital.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ================= GRUPO 4 ================= -->
+  <section class="group" id="g4">
+    <div class="group-head"><span class="group-num">04</span><h2>Casos particulares y exenciones</h2></div>
+
+    <details class="faq">
+      <summary>Tramo troncal a un centro de distribución y luego reparto final: ¿un DECA o varios?</summary>
+      <div class="answer">
+        <p>Como el cargador y el transportista son los mismos en toda la operación, puedes elegir: un único documento de control que recoja el tramo desde la planta hasta el centro de distribución y también el reparto final, o bien un documento por tramo. En el tramo de reparto, puedes incluir varios destinatarios en las distintas líneas del mismo documento.</p>
+        <div class="plug">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="#E9A318" stroke-width="2" stroke-linecap="round"/></svg>
+          <div><strong>[TU PRODUCTO]</strong> te deja generar un documento por tramo o uno único a partir de tus albaranes, sin rehacer nada. <a href="[ENLACE / CTA]">Probar →</a></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>En transporte privado complementario, ¿necesito el documento de control?</summary>
+      <div class="answer">
+        <p>No. El documento de control, también en su versión digital, es obligatorio solo para el transporte público, no para el privado complementario, aunque entregues a terceros.</p>
+        <p>Eso sí, debes llevar a bordo la documentación que acredita que estás realizando un transporte privado complementario.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Transporte internacional con cambio de camión: ¿necesito documento para el tramo nacional?</summary>
+      <div class="answer">
+        <p>Si hay un primer tramo puramente nacional con un vehículo (por ejemplo, una recogida y traslado a tu base) y luego un cambio de camión para salir al extranjero, ese tramo nacional necesita documento de control digital.</p>
+        <p>El tramo internacional se ampara en el CMR, que es lo que se presenta en carretera tanto en España hasta cruzar la frontera como fuera. Si el mismo vehículo hace todo el recorrido internacional sin ese tramo nacional previo, basta con el CMR desde el origen.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>En una exportación marítima, ¿necesito documento para llevar la mercancía al puerto?</summary>
+      <div class="answer">
+        <p>Sí. El tramo por carretera entre la planta española y el puerto necesita documento de control digital, con su QR que lleve al repositorio y su PDF.</p>
+        <p>Puedes apoyarte en los documentos propios del transporte marítimo que reflejen ese envío, pero el documento debe reunir las características del documento de control digital.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>¿Cuándo está exento el transporte de paquetería?</summary>
+      <div class="answer">
+        <p>La Orden FOM/2861 exime a los servicios de paquetería y similares de recogida y reparto: los que tienen varios puntos de recogida y entrega, un número reducido de bultos y fácilmente manipulables por una persona sin más ayuda que máquinas o herramientas del propio vehículo.</p>
+        <p>Si hoy realizas ese transporte sin documento de control, no necesitas la versión digital, porque no estás obligado a llevar el documento.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>En última milla con palets completos, ¿estoy obligado al documento de control digital?</summary>
+      <div class="answer">
+        <p>Depende de si hoy ya estás exento del documento de control administrativo, por ejemplo, por el artículo 2.d de la Orden FOM/2861. Si actualmente realizas ese transporte sin documento de control, no necesitas su versión digital, porque la obligación no te alcanza.</p>
+        <p>Conviene revisar tu caso concreto frente a los supuestos de exención de la norma.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ================= GRUPO 5 ================= -->
+  <section class="group" id="g5">
+    <div class="group-head"><span class="group-num">05</span><h2>Futuro, EFTI y transición</h2></div>
+
+    <details class="faq">
+      <summary>¿El documento de control digital solo valdrá menos de un año, hasta EFTI?</summary>
+      <div class="answer">
+        <p>No exactamente. A partir de julio de 2027, las empresas podrán —si quieren— aportar los datos del envío mediante EFTI (a través de plataformas certificadas), y las autoridades estarán obligadas a aceptarlos; pero es una opción, no una obligación.</p>
+        <p>Para quien dé ese salto, el documento de control será una solución provisional; para quien no, seguirá siendo la vía válida, sin fecha de caducidad. El ponente apuntó, como opinión personal, que con el tiempo todo tenderá hacia EFTI.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>¿Tengo que usar una aplicación certificada para el documento de control?</summary>
+      <div class="answer">
+        <p>No. No existe una certificación oficial de aplicaciones para el documento de control digital, porque técnicamente es sencillo: un QR que lleva a una URL desde la que se descarga el PDF.</p>
+        <p>La certificación de plataformas sí existirá, pero para el entorno EFTI, que es un paso posterior y más complejo.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>¿Sigue existiendo el código numérico para subir el PDF a la web del ministerio?</summary>
+      <div class="answer">
+        <p>No. Esa opción existía en la resolución anterior, pero se ha eliminado porque complicaba el proceso (registro en la sede electrónica, gestión de altas…).</p>
+        <p>Ahora el repositorio no es del ministerio, sino del cargador, del transportista o de un tercero, y el acceso se hace mediante el QR del propio documento.</p>
+      </div>
+    </details>
+  </section>
+
+  <div class="final-cta">
+    <h2>Cumple con el DCA digital sin cambiar tu forma de trabajar</h2>
+    <p>Haz una foto de tu albarán o carta de porte y obtén el documento de control listo para llevar a bordo.</p>
+    <a class="btn" href="[ENLACE / CTA]">Empieza con [TU PRODUCTO]</a>
+  </div>
+</main>
+
+<footer class="wrap">
+  Información orientativa basada en la Orden FOM/2861/2012, la Orden FOM/1230/2013, la Resolución de 5 de junio de 2026 y las respuestas del webinar del Ministerio de Transportes. Para tu caso concreto, consulta el texto de las normas y las <a href="https://www.google.com/search?q=preguntas+frecuentes+MITMA+DECA">preguntas frecuentes MITMA DECA</a>.
+</footer>
+
+</body>
+</html>
