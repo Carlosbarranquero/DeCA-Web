@@ -1,907 +1,613 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DeCA — Crea tus documentos digitales con una sola foto</title>
-<meta name="description" content="Una foto a tu Excel, al papel o a cualquier ERP. DeCA lee la imagen, extrae los datos y genera tus documentos de transporte en digital, con su QR. Pensado para empresas familiares de transporte." />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeCA — El Documento de Control digital con una sola foto</title>
+<meta name="description" content="Tus choferes hacen una foto al albarán y DeCA genera el Documento de Control digital con su QR. Cumples la Ley 9/2025 sin cambiar tu forma de trabajar. Para empresas familiares de transporte.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#0B1220;
-    --ink-soft:#1E293B;
-    --body:#3A4658;
-    --muted:#64748B;
-    --faint:#9AA7B8;
-    --line:#E3E8EF;
-    --line-soft:#EEF2F7;
-    --paper:#F5F7FA;
-    --paper-2:#EDF1F7;
-    --card:#FFFFFF;
-
-    --blue:#2563EB;        /* transportista efectivo · acción primaria */
-    --blue-ink:#1D4ED8;
-    --blue-deep:#16308C;
-    --blue-wash:#E9F0FE;
-
-    --amber:#D97706;       /* propietario / cargador contractual */
-    --amber-ink:#B45309;
-    --amber-soft:#F59E0B;
-    --amber-wash:#FBF0DC;
-
-    --maxw:1180px;
-    --ease:cubic-bezier(.22,.61,.36,1);
+    --paper:#F6F7FA;
+    --paper-2:#EAEEF5;
+    --ink:#00132A;
+    --ink-soft:#48566B;
+    --green:#1E65EC;
+    --green-deep:#062A5A;
+    --green-tint:#E1EAFC;
+    --amber:#C67100;
+    --amber-soft:#F6E6C8;
+    --line:rgba(0,19,42,.12);
+    --line-strong:rgba(0,19,42,.22);
+    --shadow:0 18px 50px -24px rgba(0,19,42,.42);
+    --radius:20px;
+    --maxw:1160px;
+    --disp:'Bricolage Grotesque',system-ui,sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
   }
-
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
   body{
-    margin:0;
+    font-family:var(--body);
+    color:var(--ink);
     background:var(--paper);
-    color:var(--body);
-    font-family:"Plus Jakarta Sans",sans-serif;
-    font-size:18px;
-    line-height:1.62;
+    line-height:1.6;
     -webkit-font-smoothing:antialiased;
-    text-rendering:optimizeLegibility;
     overflow-x:hidden;
   }
-  ::selection{background:var(--amber-wash);color:var(--amber-ink);}
-
-  /* atmósfera de fondo: rejilla muy tenue + lavados de color de las dos partes */
-  body::before{
-    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-    background-image:
-      radial-gradient(60% 50% at 88% -6%, rgba(37,99,235,.07), transparent 60%),
-      radial-gradient(46% 42% at 2% 12%, rgba(217,119,6,.06), transparent 60%),
-      linear-gradient(to right, rgba(15,30,60,.028) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(15,30,60,.028) 1px, transparent 1px);
-    background-size:auto, auto, 46px 46px, 46px 46px;
+  a{color:inherit;text-decoration:none}
+  .container{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.72rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--green);
+    font-weight:600;
+    display:inline-flex;
+    align-items:center;
+    gap:.5em;
   }
-  main,nav,footer{position:relative;z-index:1;}
-
-  a{color:inherit;text-decoration:none;}
-  img{max-width:100%;display:block;}
-
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
-
-  h1,h2,h3{margin:0;color:var(--ink);font-weight:600;}
-  .serif{font-family:"Fraunces",Georgia,serif;font-weight:400;letter-spacing:-.012em;line-height:1.06;}
-  .jakarta{font-family:"Plus Jakarta Sans",sans-serif;}
-
-  /* ---------- progreso superior (degradado de las dos partes) ---------- */
-  .progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;
-    background:linear-gradient(90deg,var(--amber),var(--blue));transition:width .12s linear;}
-
-  /* ---------------- NAV ---------------- */
-  nav{position:sticky;top:0;z-index:50;backdrop-filter:saturate(140%) blur(8px);
-    background:rgba(245,247,250,.72);border-bottom:1px solid transparent;transition:border-color .3s,background .3s;}
-  nav.stuck{border-color:var(--line);background:rgba(245,247,250,.86);}
-  .nav-in{display:flex;align-items:center;justify-content:space-between;height:68px;}
-  .brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:21px;color:var(--ink);letter-spacing:-.02em;}
-  .brand .glyph{width:34px;height:34px;border-radius:9px;background:var(--blue-wash);
-    display:grid;place-items:center;color:var(--blue);}
-  .brand .glyph svg{width:18px;height:18px;}
-  .nav-links{display:flex;align-items:center;gap:30px;font-size:15px;font-weight:600;color:var(--muted);}
-  .nav-links a{transition:color .2s;}
-  .nav-links a:hover{color:var(--ink);}
-  .nav-cta{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;
-    padding:10px 18px;border-radius:10px;font-weight:700;font-size:14.5px;
-    box-shadow:0 6px 18px -8px rgba(37,99,235,.65);transition:transform .18s var(--ease),box-shadow .18s;}
-  .nav-cta:hover{transform:translateY(-1px);box-shadow:0 12px 26px -10px rgba(37,99,235,.7);}
-  @media(max-width:760px){.nav-links{display:none;}}
-
-  /* ---------------- eyebrow firma (barra lateral de color) ---------------- */
-  .eyebrow{display:inline-flex;align-items:center;gap:11px;
-    font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
-  .eyebrow::before{content:"";width:3px;height:15px;border-radius:3px;background:var(--blue);}
-  .eyebrow.amber::before{background:var(--amber);}
-  .eyebrow.amber{color:var(--amber-ink);}
-  .eyebrow.blue{color:var(--blue-ink);}
-
-  /* ---------------- HERO ---------------- */
-  .hero{padding:74px 0 40px;}
-  .hero-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:56px;align-items:center;}
-  .hero h1{font-size:clamp(40px,5.6vw,68px);margin:22px 0 0;color:var(--ink);}
-  .hero h1 em{font-style:italic;color:var(--blue);}
-  .hero .lede{margin:24px 0 0;font-size:19.5px;color:var(--body);max-width:36ch;}
-  .hero .lede b{color:var(--ink-soft);font-weight:700;}
-  /* rotador de fuentes: Excel / ERP / papel */
-  .h1-lead{display:block;}
-  .rotator{position:relative;display:inline-flex;overflow:hidden;vertical-align:middle;height:1.3em;transition:width .35s var(--ease);}
-  .rotator-track{display:flex;flex-direction:column;align-items:flex-start;transition:transform .55s var(--ease);}
-  .chip{display:inline-flex;align-items:center;gap:.36em;white-space:nowrap;
-    font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;font-size:.5em;line-height:1.32;letter-spacing:-.01em;
-    padding:.28em .62em;border-radius:.46em;}
-  .chip svg{width:1.05em;height:1.05em;flex:none;}
-  .chip-paper{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:0 7px 18px -10px rgba(11,18,32,.38);}
-  .h1-photo{line-height:1.36;}
-  .hl-foto{color:var(--blue);font-weight:600;white-space:nowrap;}
-  .hl-foto svg{width:.74em;height:.74em;vertical-align:-.08em;margin-left:.16em;}
-  @media (prefers-reduced-motion: reduce){
-    .rotator{height:auto;width:auto!important;overflow:visible;}
-    .rotator-track{flex-direction:row;flex-wrap:wrap;gap:.34em;transform:none!important;}
+  .eyebrow::before{
+    content:"";width:22px;height:1.5px;background:var(--green);display:inline-block;
   }
-  .hero-actions{display:flex;align-items:center;gap:20px;margin-top:34px;flex-wrap:wrap;}
-  .btn-primary{display:inline-flex;align-items:center;gap:10px;background:var(--blue);color:#fff;
-    padding:16px 26px;border-radius:12px;font-weight:700;font-size:16px;
-    box-shadow:0 14px 30px -12px rgba(37,99,235,.7);transition:transform .18s var(--ease),box-shadow .18s;}
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 20px 40px -14px rgba(37,99,235,.78);}
-  .btn-primary svg{width:18px;height:18px;}
-  .link-ghost{font-weight:700;font-size:16px;color:var(--ink-soft);display:inline-flex;align-items:center;gap:7px;
-    border-bottom:2px solid var(--line);padding-bottom:2px;transition:border-color .2s,gap .2s;}
-  .link-ghost:hover{border-color:var(--amber);gap:11px;}
-  .hero-note{margin-top:26px;font-size:14px;color:var(--muted);display:flex;align-items:center;gap:10px;}
-  .hero-note .dot{width:6px;height:6px;border-radius:50%;background:var(--amber-soft);}
+  h1,h2,h3{font-family:var(--disp);line-height:1.05;letter-spacing:-.02em;font-weight:700}
+  .btn{
+    display:inline-flex;align-items:center;gap:.55em;
+    font-family:var(--body);font-weight:600;font-size:1rem;
+    padding:15px 26px;border-radius:100px;border:1.5px solid transparent;
+    cursor:pointer;transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    white-space:nowrap;
+  }
+  .btn-primary{background:var(--green);color:#fff;box-shadow:0 12px 28px -12px rgba(30,101,236,.6)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 34px -12px rgba(30,101,236,.8)}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+  .btn-ghost:hover{border-color:var(--ink);transform:translateY(-2px)}
+  .btn-amber{background:var(--ink);color:#fff}
+  .btn-amber:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
 
-  /* maqueta de teléfono con la captura real */
-  .phone-stage{position:relative;display:flex;justify-content:center;}
-  .phone-stage::after{content:"";position:absolute;inset:14% -6% -10% 8%;z-index:-1;border-radius:40px;
-    background:radial-gradient(60% 60% at 50% 30%, rgba(37,99,235,.16), transparent 70%);filter:blur(8px);}
-  .phone{width:296px;max-width:84vw;border-radius:38px;background:#0B1220;padding:11px;
-    box-shadow:0 40px 80px -34px rgba(11,18,32,.55),0 8px 22px -12px rgba(11,18,32,.4);position:relative;}
-  .phone .notch{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:96px;height:7px;border-radius:6px;background:#252e40;z-index:3;}
-  .phone-screen{border-radius:28px;overflow:hidden;background:#F5F7FA;position:relative;height:560px;}
-  .phone-screen img,.phone-screen video{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;background:#F5F7FA;}
-  .phone-screen::after{content:"";position:absolute;left:0;right:0;bottom:0;height:84px;
-    background:linear-gradient(to top, #F5F7FA 6%, rgba(245,247,250,0));}
-  .phone-tag{position:absolute;z-index:4;background:#fff;border:1px solid var(--line);border-radius:11px;
-    padding:8px 13px;font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:8px;
-    box-shadow:0 14px 30px -16px rgba(11,18,32,.45);}
-  .phone-tag .pin{width:8px;height:8px;border-radius:50%;}
-  .phone-tag.t1{top:118px;left:-42px;color:var(--amber-ink);}
-  .phone-tag.t1 .pin{background:var(--amber);}
-  .phone-tag.t2{bottom:64px;right:-40px;color:var(--blue-ink);}
-  .phone-tag.t2 .pin{background:var(--blue);}
-  @media(max-width:880px){
-    .hero-grid{grid-template-columns:1fr;gap:14px;}
-    .phone-stage{margin-top:18px;order:2;}
-    .phone-tag.t1{left:-8px;} .phone-tag.t2{right:-6px;}
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(247,246,241,.82);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-weight:800;font-size:1.35rem;letter-spacing:-.03em}
+  .brand-mark{
+    width:32px;height:32px;border-radius:9px;background:var(--green);position:relative;flex:0 0 auto;
+    display:grid;place-items:center;
+  }
+  .brand-mark::before,.brand-mark::after{content:"";position:absolute;background:var(--amber)}
+  .brand-mark::before{width:13px;height:2px;border-radius:2px}
+  .brand-mark::after{width:2px;height:13px;border-radius:2px}
+  .brand span{color:var(--green)}
+  .nav-links{display:flex;align-items:center;gap:30px}
+  .nav-links a{font-size:.92rem;color:var(--ink-soft);font-weight:500;transition:color .15s}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-cta{display:flex;align-items:center;gap:16px}
+  @media(max-width:820px){.nav-links{display:none}.nav-cta .ghost-link{display:none}}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:70px 0 40px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+  .legal-pill{
+    display:inline-flex;align-items:center;gap:9px;
+    background:var(--amber-soft);border:1px solid rgba(243,167,18,.5);
+    color:#7a4600;font-family:var(--mono);font-weight:600;font-size:.74rem;
+    letter-spacing:.04em;padding:7px 14px;border-radius:100px;margin-bottom:24px;
+  }
+  .legal-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--amber);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .hero h1{font-size:clamp(2.5rem,5.2vw,4rem);font-weight:800;margin-bottom:22px}
+  .hero h1 .swap{
+    color:var(--green);position:relative;white-space:nowrap;
+    
+  }
+  .hero p.lead{font-size:1.18rem;color:var(--ink-soft);max-width:33ch;margin-bottom:32px}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+  .reassure{font-family:var(--mono);font-size:.78rem;color:var(--ink-soft);display:flex;gap:16px;flex-wrap:wrap}
+  .reassure span{display:inline-flex;align-items:center;gap:6px}
+  .reassure span::before{content:"✓";color:var(--green);font-weight:700}
+
+  /* hero visual: phone scanning -> generated doc */
+  .hero-visual{position:relative;display:flex;justify-content:center;align-items:center;min-height:420px}
+  .viewfinder{position:absolute;inset:0;pointer-events:none}
+  .vf-corner{position:absolute;width:34px;height:34px;border:3px solid var(--amber);opacity:.9}
+  .vf-corner.tl{top:6px;left:14px;border-right:none;border-bottom:none;border-radius:6px 0 0 0}
+  .vf-corner.tr{top:6px;right:14px;border-left:none;border-bottom:none;border-radius:0 6px 0 0}
+  .vf-corner.bl{bottom:6px;left:14px;border-right:none;border-top:none;border-radius:0 0 0 6px}
+  .vf-corner.br{bottom:6px;right:14px;border-left:none;border-top:none;border-radius:0 0 6px 0}
+
+  .phone{
+    width:260px;height:445px;background:var(--ink);border-radius:32px;padding:10px;
+    box-shadow:var(--shadow);position:relative;z-index:2;transform:rotate(-4deg);
+  }
+  .phone-screen{background:#fff;border-radius:24px;height:100%;overflow:hidden;position:relative}
+  .phone-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:24px;display:block;background:#0a1f3a}
+  .phone-notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:56px;height:5px;background:#16324f;border-radius:5px;z-index:3}
+  .doc-photo{padding:26px 16px 16px;position:relative;height:100%}
+  .doc-photo .plabel{font-family:var(--mono);font-size:.55rem;color:#9aa89e;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+  .doc-line{height:7px;background:#e7e9e4;border-radius:4px;margin-bottom:9px}
+  .doc-line.s{width:55%}.doc-line.m{width:80%}.doc-line.l{width:95%}
+  .scanbar{
+    position:absolute;left:8px;right:8px;height:38px;top:40px;
+    background:linear-gradient(180deg,rgba(30,101,236,0) 0%,rgba(30,101,236,.28) 60%,rgba(30,101,236,.9) 100%);
+    border-bottom:2.5px solid var(--green);border-radius:6px;
+    animation:scan 3.2s cubic-bezier(.6,0,.4,1) infinite;
+  }
+  @keyframes scan{0%{top:34px}45%{top:78%}55%{top:78%}100%{top:34px}}
+
+  .doc-out{
+    position:absolute;right:-38px;bottom:6px;z-index:3;width:186px;
+    background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:16px;
+    transform:rotate(5deg);border:1px solid var(--line);
+  }
+  .doc-out .badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-tint);color:var(--green);font-family:var(--mono);font-weight:600;font-size:.6rem;padding:4px 9px;border-radius:100px;letter-spacing:.05em}
+  .doc-out h4{font-family:var(--disp);font-size:.92rem;margin:11px 0 3px;letter-spacing:-.01em}
+  .doc-out .sub{font-size:.62rem;color:var(--ink-soft);font-family:var(--mono);margin-bottom:12px}
+  .doc-out .qr{width:56px;height:56px;display:grid;grid-template-columns:repeat(7,1fr);gap:2px;float:right;margin:-2px 0 0 8px}
+  .doc-out .qr i{background:var(--ink);border-radius:1px}
+  .doc-out .qr i.o{background:transparent}
+  .doc-out .check{display:flex;align-items:center;gap:7px;font-size:.68rem;color:var(--green);font-weight:600;margin-top:8px}
+  .doc-out .check svg{flex:0 0 auto}
+
+  @media(max-width:920px){
+    .hero-grid{grid-template-columns:1fr;gap:10px}
+    .hero-visual{min-height:400px;margin-top:20px}
+    .hero p.lead{max-width:none}
   }
 
-  /* ---------------- ANCHOR ---------------- */
-  .anchor{padding:108px 0;text-align:center;}
-  .anchor .spine{width:2px;height:54px;margin:0 auto 30px;
-    background:linear-gradient(var(--amber),var(--blue));border-radius:2px;}
-  .anchor p{font-family:"Fraunces",serif;font-weight:400;line-height:1.12;letter-spacing:-.015em;
-    font-size:clamp(30px,4.6vw,52px);color:var(--ink);max-width:18ch;margin:0 auto;}
-  .anchor p em{font-style:italic;color:var(--amber);}
-  .anchor p b{font-weight:500;color:var(--blue);}
+  /* ---------- BENEFITS STRIP ---------- */
+  .benefits{background:var(--ink);color:#fff;padding:14px 0 56px}
+  .benefits-inner{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .benefits-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .benefit{
+    position:relative;
+    background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:18px;padding:30px 26px 28px;
+    display:flex;flex-direction:column;gap:18px;
+    transition:transform .22s ease, border-color .22s ease, background .22s ease;
+  }
+  .benefit::before{content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+  .benefit:hover{
+    transform:translateY(-5px);
+    border-color:rgba(30,101,236,.55);
+    background:linear-gradient(165deg,rgba(30,101,236,.12),rgba(255,255,255,.02));
+  }
+  .benefit .bic{
+    width:52px;height:52px;border-radius:14px;flex:0 0 auto;display:grid;place-items:center;
+    background:linear-gradient(150deg,var(--amber),#a85e00);color:#fff;
+    box-shadow:0 8px 20px -8px rgba(198,113,0,.6);
+  }
+  .benefit h4{font-family:var(--disp);font-size:1.1rem;font-weight:700;letter-spacing:-.01em;line-height:1.25;color:#fff;max-width:14ch}
+  @media(max-width:820px){.benefits-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.benefits-grid{grid-template-columns:1fr}}
 
-  /* ---------------- SECCIÓN base ---------------- */
-  .section{padding:96px 0;}
-  .section-head{max-width:62ch;}
-  .section-head h2{font-size:clamp(28px,3.6vw,42px);margin-top:18px;color:var(--ink);line-height:1.1;}
-  .section-head .serif{font-family:"Fraunces",serif;font-weight:400;}
-  .section-head p{margin:20px 0 0;font-size:18.5px;color:var(--body);}
-  .perks{list-style:none;margin:22px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:14px 28px;}
-  .perks li{display:flex;align-items:center;gap:8px;font-size:15.5px;font-weight:700;color:var(--ink-soft);}
-  .perks li svg{width:18px;height:18px;color:var(--blue);flex:none;}
+  /* ---------- SECTION SHELL ---------- */
+  .section{padding:96px 0}
+  .section-head{max-width:640px;margin-bottom:52px}
+  .section-head h2{font-size:clamp(1.9rem,3.6vw,2.7rem);margin:16px 0 14px}
+  .section-head p{color:var(--ink-soft);font-size:1.08rem}
 
-  /* problema: editorial con dos columnas asimétricas */
-  .problem{position:relative;}
-  .problem-body{display:grid;grid-template-columns:1.25fr .75fr;gap:54px;margin-top:46px;align-items:start;}
-  .problem-prose p{margin:0 0 20px;font-size:19px;color:var(--body);}
-  .problem-prose p:last-child{margin-bottom:0;}
-  .problem-prose strong{color:var(--ink);font-weight:700;}
-  .pain-list{border-left:2px solid var(--amber);padding-left:26px;display:flex;flex-direction:column;gap:24px;}
-  .pain-list .pain{font-size:16px;}
-  .pain-list .pain b{display:block;font-family:"Fraunces",serif;font-size:21px;font-weight:500;color:var(--ink);margin-bottom:5px;letter-spacing:-.01em;}
-  @media(max-width:820px){.problem-body{grid-template-columns:1fr;gap:34px;}}
+  /* ---------- PAINS ---------- */
+  .pains{background:var(--paper-2)}
+  .pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .pain-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:30px 28px;transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .pain-card:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+  .pain-icon{
+    width:46px;height:46px;border-radius:12px;background:var(--green-tint);color:var(--green);
+    display:grid;place-items:center;margin-bottom:20px;
+  }
+  .pain-card h3{font-size:1.22rem;margin-bottom:10px}
+  .pain-card p{color:var(--ink-soft);font-size:.98rem}
+  .pain-tag{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:14px;display:block}
+  @media(max-width:820px){.pain-grid{grid-template-columns:1fr}}
 
-  /* ley: explicada fácil */
-  .law{background:linear-gradient(180deg,#fff,#fbfcfe);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);}
-  .law-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:54px;margin-top:46px;align-items:start;}
-  .law-points{display:flex;flex-direction:column;gap:0;}
-  .law-point{display:grid;grid-template-columns:auto 1fr;gap:20px;padding:24px 0;border-top:1px solid var(--line);}
-  .law-point:first-child{border-top:none;padding-top:4px;}
-  .law-point .yr{font-family:"Fraunces",serif;font-weight:500;font-size:15px;color:var(--blue-ink);
-    white-space:nowrap;padding-top:3px;min-width:104px;letter-spacing:.01em;}
-  .law-point h4{margin:0 0 6px;font-size:18px;color:var(--ink);font-weight:700;}
-  .law-point p{margin:0;font-size:15.5px;color:var(--body);}
-  .law-aside{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:30px;}
-  .law-aside h4{font-family:"Fraunces",serif;font-weight:500;font-size:22px;color:var(--ink);margin:0 0 14px;letter-spacing:-.01em;}
-  .law-aside p{font-size:15.5px;margin:0 0 14px;color:var(--body);}
-  .law-aside .parties{display:grid;gap:10px;margin:18px 0 24px;}
-  .law-aside .party{position:relative;display:flex;align-items:baseline;flex-wrap:wrap;gap:5px 12px;
-    padding:13px 16px;border:1px solid var(--line);border-radius:12px;}
-  .law-aside .party::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:3px;}
-  .law-aside .party.amber{background:var(--amber-wash);}
-  .law-aside .party.amber::before{background:var(--amber);}
-  .law-aside .party.blue{background:var(--blue-wash);}
-  .law-aside .party.blue::before{background:var(--blue);}
-  .law-aside .party .role{font-family:"Fraunces",serif;font-weight:600;font-size:16px;letter-spacing:-.01em;}
-  .law-aside .party.amber .role{color:var(--amber-ink);}
-  .law-aside .party.blue .role{color:var(--blue-ink);}
-  .law-aside .party .desc{font-size:13.5px;color:var(--body);}
-  .law-aside .who{display:flex;flex-direction:column;gap:11px;margin-top:0;}
-  .law-aside .who-label{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);}
-  .law-aside .who-chips{display:flex;flex-wrap:wrap;gap:9px;}
-  .law-aside .who-chips span{font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-    border:1px solid var(--line);border-radius:999px;padding:7px 13px;color:var(--ink-soft);}
-  .src{margin-top:30px;font-size:12.5px;color:var(--faint);letter-spacing:.01em;}
-  .src b{color:var(--muted);font-weight:700;}
-  @media(max-width:820px){.law-grid{grid-template-columns:1fr;gap:32px;}.law-point .yr{min-width:88px;}}
+  /* ---------- HOW ---------- */
+  .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;position:relative}
+  .step{position:relative;padding:32px 26px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper)}
+  .step.feature{background:var(--green-deep);color:#fff;border-color:transparent}
+  .step .snum{
+    font-family:var(--disp);font-size:1rem;font-weight:800;color:var(--paper);
+    width:38px;height:38px;border-radius:10px;background:var(--green);
+    display:grid;place-items:center;margin-bottom:22px;
+  }
+  .step.feature .snum{background:var(--amber);color:var(--ink)}
+  .step h3{font-size:1.28rem;margin-bottom:10px}
+  .step p{color:var(--ink-soft);font-size:.98rem}
+  .step.feature p{color:rgba(255,255,255,.8)}
+  .step .kbd{font-family:var(--mono);font-size:.82em;background:var(--green-tint);color:var(--green);padding:1px 7px;border-radius:6px}
+  .step.feature .kbd{background:rgba(255,255,255,.16);color:#fff}
+  /* viewfinder brackets on step 1 */
+  .step.shoot::before,.step.shoot::after,
+  .step.shoot .vfb1,.step.shoot .vfb2{content:"";position:absolute;width:20px;height:20px;border:2.5px solid var(--amber)}
+  .step.shoot::before{top:14px;left:14px;border-right:none;border-bottom:none}
+  .step.shoot::after{top:14px;right:14px;border-left:none;border-bottom:none}
+  .step.shoot .vfb1{bottom:14px;left:14px;border-right:none;border-top:none}
+  .step.shoot .vfb2{bottom:14px;right:14px;border-left:none;border-top:none}
+  .how-note{margin-top:26px;display:flex;gap:22px;flex-wrap:wrap;font-family:var(--mono);font-size:.82rem;color:var(--ink-soft)}
+  .how-note span::before{content:"✓ ";color:var(--green);font-weight:700}
+  @media(max-width:820px){.how-grid{grid-template-columns:1fr}}
 
-  /* cómo funciona: secuencia numerada (sí es una secuencia real) */
-  .steps{display:grid;grid-template-columns:.8fr 1.2fr;gap:40px;margin-top:50px;align-items:center;}
-  .step{display:grid;grid-template-columns:auto 1fr;gap:22px;padding:22px 0;position:relative;}
-  .step + .step{border-top:1px solid var(--line);}
-  .step .num{font-family:"Fraunces",serif;font-weight:500;font-size:17px;width:38px;height:38px;border-radius:10px;
-    display:grid;place-items:center;background:#fff;border:1px solid var(--line);color:var(--blue-ink);}
-  .step.own .num{color:var(--amber-ink);}
-  .step h4{margin:5px 0 6px;font-size:19px;color:var(--ink);font-weight:700;}
-  .step p{margin:0;font-size:16px;color:var(--body);}
-  .step p code{font-family:"Plus Jakarta Sans";font-weight:700;background:var(--blue-wash);color:var(--blue-ink);
-    padding:1px 7px;border-radius:6px;font-size:14.5px;}
-  .step p code.amberc{background:var(--amber-wash);color:var(--amber-ink);}
-  .steps-visual{position:relative;}
-  .ui-detail{border-radius:18px;overflow:hidden;border:1px solid var(--line);
-    box-shadow:0 30px 60px -34px rgba(11,18,32,.4);background:#fff;}
-  .ui-detail .bar{height:38px;background:#fff;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:7px;padding:0 15px;}
-  .ui-detail .bar i{width:10px;height:10px;border-radius:50%;background:var(--line);display:inline-block;}
-  .ui-detail .shot{background:#fff;}
-  .ui-detail .shot img{width:100%;height:auto;display:block;}
-  .ui-caption{margin-top:16px;font-size:13.5px;color:var(--muted);display:flex;align-items:center;gap:9px;}
-  .ui-caption .pin{width:7px;height:7px;border-radius:50%;background:var(--blue);}
-  @media(max-width:880px){.steps{grid-template-columns:1fr;gap:38px;}.steps-visual{order:-1;}}
-  .why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;margin-top:38px;}
-  .why-card{border-top:2px solid var(--amber);padding-top:18px;}
-  .why-card h4{font-family:"Fraunces",serif;font-weight:500;font-size:20px;color:var(--ink);margin:0 0 8px;letter-spacing:-.01em;}
-  .why-card p{margin:0;font-size:15.5px;color:var(--body);}
-  @media(max-width:820px){.why-grid{grid-template-columns:1fr;gap:26px;}}
+  /* ---------- COMPLIANCE ---------- */
+  .regla{background:var(--green-deep);color:#fff}
+  .regla .section-head h2{color:#fff}
+  .regla-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+  .regla .eyebrow{color:var(--amber)}
+  .regla .eyebrow::before{background:var(--amber)}
+  .regla h2{font-size:clamp(1.9rem,3.6vw,2.7rem);color:#fff;margin:16px 0 18px}
+  .regla p.big{color:rgba(255,255,255,.82);font-size:1.1rem;margin-bottom:26px}
+  .check-list{list-style:none;display:grid;gap:14px}
+  .check-list li{display:flex;gap:13px;align-items:flex-start;font-size:1rem;color:rgba(255,255,255,.9)}
+  .check-list li svg{flex:0 0 auto;margin-top:3px}
+  .authority{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
+    border-radius:var(--radius);padding:34px;
+  }
+  .authority .qmark{font-family:var(--disp);font-size:3.4rem;color:var(--amber);line-height:.6;margin-bottom:8px}
+  .authority p{font-size:1.12rem;color:#fff;font-weight:500;margin-bottom:18px;line-height:1.5}
+  .authority .src{font-family:var(--mono);font-size:.76rem;color:rgba(255,255,255,.6);letter-spacing:.04em}
+  @media(max-width:820px){.regla-grid{grid-template-columns:1fr;gap:34px}}
 
-  /* ---------------- MOMENTO DOMINANTE (full-bleed oscuro) ---------------- */
-  .control{background:var(--ink);color:#C6D0DF;position:relative;overflow:hidden;padding:118px 0;}
-  .control::before{content:"";position:absolute;inset:0;
-    background:
-      radial-gradient(50% 60% at 78% 18%, rgba(37,99,235,.22), transparent 62%),
-      radial-gradient(40% 50% at 12% 96%, rgba(217,119,6,.12), transparent 60%);}
-  .control::after{content:"";position:absolute;inset:0;opacity:.4;
-    background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-    background-size:54px 54px;mask-image:radial-gradient(70% 70% at 60% 40%,#000,transparent);}
-  .control-in{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:60px;align-items:center;}
-  .control .eyebrow{color:#8FA0B6;}
-  .control .eyebrow::before{background:var(--blue);}
-  .control h2{color:#fff;font-family:"Fraunces",serif;font-weight:400;font-size:clamp(32px,4.4vw,52px);
-    line-height:1.08;letter-spacing:-.015em;margin:20px 0 0;}
-  .control h2 em{font-style:italic;color:var(--amber-soft);}
-  .control .copy{margin:26px 0 0;font-size:19px;color:#AEB9C9;max-width:42ch;}
-  .control .copy b{color:#fff;font-weight:600;}
-  .control .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px;}
-  .control .meta span{font-size:12.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-    border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:8px 14px;color:#C6D0DF;}
-  /* QR decorativo (no escaneable) */
-  .qr-card{justify-self:center;background:#fff;border-radius:24px;padding:26px;width:262px;
-    box-shadow:0 50px 90px -40px rgba(0,0,0,.7);transform:rotate(-2.5deg);}
-  .qr-card .qr{width:100%;aspect-ratio:1;border-radius:8px;}
-  .qr-card .label{margin-top:18px;text-align:center;}
-  .qr-card .label .t{font-weight:800;color:var(--ink);font-size:15px;letter-spacing:-.01em;}
-  .qr-card .label .s{font-size:12px;color:var(--muted);margin-top:3px;font-family:"Plus Jakarta Sans";
-    letter-spacing:.02em;}
-  @media(max-width:880px){.control-in{grid-template-columns:1fr;gap:42px;}.qr-card{order:-1;}}
+  /* ---------- FAQ ---------- */
+  .faq-wrap{max-width:820px;margin:0 auto}
+  details.faq{border-bottom:1px solid var(--line);padding:22px 0}
+  details.faq summary{
+    list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:20px;align-items:center;
+    font-family:var(--disp);font-weight:700;font-size:1.14rem;letter-spacing:-.01em;
+  }
+  details.faq summary::-webkit-details-marker{display:none}
+  details.faq .plus{flex:0 0 auto;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;transition:.2s;position:relative}
+  details.faq .plus::before,details.faq .plus::after{content:"";position:absolute;background:var(--ink);border-radius:2px}
+  details.faq .plus::before{width:12px;height:2px}
+  details.faq .plus::after{width:2px;height:12px;transition:.2s}
+  details.faq[open] .plus{background:var(--green);border-color:var(--green)}
+  details.faq[open] .plus::before,details.faq[open] .plus::after{background:#fff}
+  details.faq[open] .plus::after{transform:rotate(90deg);opacity:0}
+  details.faq p{color:var(--ink-soft);margin-top:14px;font-size:1rem;max-width:70ch}
+  details.faq p .kbd{font-family:var(--mono);font-size:.85em;background:var(--green-tint);color:var(--green);padding:1px 6px;border-radius:5px}
 
-  /* ---------------- CUMPLIMIENTO ---------------- */
-  .comply-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;margin-top:48px;
-    background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden;}
-  .comply-cell{background:#fff;padding:34px 32px;}
-  .comply-cell .tag{display:inline-flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;
-    letter-spacing:.13em;text-transform:uppercase;color:var(--blue-ink);margin-bottom:16px;}
-  .comply-cell.own .tag{color:var(--amber-ink);}
-  .comply-cell .tag .b{width:3px;height:13px;border-radius:3px;background:var(--blue);}
-  .comply-cell.own .tag .b{background:var(--amber);}
-  .comply-cell h4{font-family:"Fraunces",serif;font-weight:500;font-size:23px;color:var(--ink);margin:0 0 16px;letter-spacing:-.01em;}
-  .comply-cell ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:13px;}
-  .comply-cell li{display:grid;grid-template-columns:auto 1fr;gap:12px;font-size:15.5px;color:var(--body);align-items:start;}
-  .comply-cell li svg{width:17px;height:17px;margin-top:4px;color:var(--blue);flex:none;}
-  .comply-cell.own li svg{color:var(--amber-soft);}
-  .comply-aside{margin-top:26px;font-size:14.5px;color:var(--muted);background:var(--paper);
-    border:1px dashed var(--line);border-radius:12px;padding:18px 22px;}
-  .comply-aside b{color:var(--ink-soft);font-weight:700;}
-  @media(max-width:760px){.comply-grid{grid-template-columns:1fr;}}
+  /* ---------- CTA / FORM ---------- */
+  .cta{background:var(--paper-2)}
+  .cta-card{
+    background:var(--ink);color:#fff;border-radius:28px;padding:56px;position:relative;overflow:hidden;
+    display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
+  }
+  .cta-card::before{
+    content:"";position:absolute;width:280px;height:280px;border-radius:50%;
+    background:radial-gradient(circle,rgba(198,113,0,.22),transparent 70%);top:-90px;right:-60px;
+  }
+  .cta-card h2{font-size:clamp(1.8rem,3.4vw,2.5rem);color:#fff;margin-bottom:14px;position:relative}
+  .cta-card p{color:rgba(255,255,255,.75);margin-bottom:20px;position:relative}
+  .cta-card .reassure{color:rgba(255,255,255,.6)}
+  .cta-card .reassure span::before{color:var(--amber)}
+  .form{position:relative;display:grid;gap:12px}
+  .form input{
+    width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.06);color:#fff;font-family:var(--body);font-size:.98rem;
+  }
+  .form input::placeholder{color:rgba(255,255,255,.45)}
+  .form input:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:transparent}
+  .form .btn{justify-content:center;width:100%;background:var(--amber);color:var(--ink);margin-top:4px}
+  .form .btn:hover{transform:translateY(-2px)}
+  .form-ok{display:none;background:rgba(30,101,236,.22);border:1px solid var(--green);border-radius:12px;padding:16px;font-size:.95rem}
+  .form-ok.show{display:block}
+  @media(max-width:820px){.cta-card{grid-template-columns:1fr;padding:36px 26px;gap:30px}}
 
-  /* ---------------- FAQS ---------------- */
-  .faqs{background:linear-gradient(180deg,#fff,#fbfcfe);border-top:1px solid var(--line-soft);}
-  .faqs-topics{display:flex;flex-wrap:wrap;gap:9px;margin-top:32px;}
-  .faqs-topics a{font-size:13px;font-weight:600;color:var(--muted);border:1px solid var(--line);
-    border-radius:999px;padding:7px 15px;background:#fff;transition:color .15s,border-color .15s;}
-  .faqs-topics a:hover{color:var(--blue-ink);border-color:var(--blue);}
-  .faq-group{margin-top:50px;}
-  .faq-group-head{display:flex;align-items:baseline;gap:13px;margin:0 0 18px;}
-  .faq-num{font-family:"Fraunces",serif;font-weight:600;font-size:13.5px;color:var(--amber-ink);
-    border:1.5px solid var(--amber);border-radius:8px;padding:2px 9px;flex:none;}
-  .faq-group-head h3{font-family:"Fraunces",serif;font-weight:500;font-size:21px;color:var(--ink);
-    margin:0;letter-spacing:-.01em;}
-  details.faq{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;
-    overflow:hidden;transition:border-color .15s,box-shadow .15s;}
-  details.faq[open]{border-color:var(--blue);box-shadow:0 12px 28px -18px rgba(11,18,32,.28);}
-  details.faq summary{list-style:none;cursor:pointer;padding:18px 50px 18px 20px;position:relative;
-    font-weight:700;font-size:16px;color:var(--ink);}
-  details.faq summary::-webkit-details-marker{display:none;}
-  details.faq summary::after{content:"";position:absolute;right:20px;top:50%;width:10px;height:10px;
-    border-right:2px solid var(--blue);border-bottom:2px solid var(--blue);
-    transform:translateY(-70%) rotate(45deg);transition:transform .2s;}
-  details.faq[open] summary::after{transform:translateY(-30%) rotate(-135deg);}
-  .faq-a{padding:0 20px 20px;color:var(--body);font-size:15px;}
-  .faq-a p{margin:0 0 12px;}
-  .faq-a p:last-child{margin:0;}
-  .faq-plug{display:flex;gap:10px;align-items:flex-start;margin-top:13px;background:var(--amber-wash);
-    border:1px solid #F0DFB4;border-left:3px solid var(--amber);border-radius:10px;
-    padding:11px 13px;color:var(--amber-ink);font-size:13.5px;}
-  .faq-plug svg{flex:none;margin-top:2px;}
-  .faq-plug a{color:var(--blue-ink);font-weight:700;}
-  .faq-ref{font-size:12.5px;color:var(--faint);margin-top:10px;font-style:italic;}
+  /* ---------- FOOTER ---------- */
+  footer.foot{background:var(--ink);color:rgba(255,255,255,.7);padding:56px 0 34px}
+  .foot-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;padding-bottom:34px;border-bottom:1px solid rgba(255,255,255,.12)}
+  .foot .brand{color:#fff}
+  .foot .brand span{color:var(--amber)}
+  .foot-desc{max-width:340px;font-size:.94rem;margin-top:14px;color:rgba(255,255,255,.6)}
+  .foot-legal{font-family:var(--mono);font-size:.74rem;line-height:2;color:rgba(255,255,255,.55)}
+  .foot-legal strong{color:rgba(255,255,255,.85);display:block;margin-bottom:6px;font-weight:600}
+  .foot-bottom{padding-top:26px;font-family:var(--mono);font-size:.74rem;color:rgba(255,255,255,.45)}
 
-  /* ---------------- BENEFICIOS ---------------- */
-  .benefits{background:linear-gradient(180deg,#fff,#fbfcfe);border-top:1px solid var(--line-soft);}
-  .ben-rows{margin-top:44px;border-top:1px solid var(--line);}
-  .ben-row{display:grid;grid-template-columns:.42fr .58fr;gap:40px;padding:34px 0;border-bottom:1px solid var(--line);align-items:baseline;}
-  .ben-row h4{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(22px,2.5vw,29px);color:var(--ink);margin:0;letter-spacing:-.012em;}
-  .ben-row p{margin:0;font-size:17px;color:var(--body);}
-  @media(max-width:760px){.ben-row{grid-template-columns:1fr;gap:10px;}}
-
-  /* ---------------- EMPEZAR ---------------- */
-  .start-card{background:var(--ink);border-radius:26px;padding:clamp(34px,5vw,64px);color:#C6D0DF;position:relative;overflow:hidden;margin-top:8px;}
-  .start-card::before{content:"";position:absolute;inset:0;
-    background:radial-gradient(50% 70% at 88% 0%,rgba(37,99,235,.26),transparent 60%),
-              radial-gradient(40% 60% at 0% 100%,rgba(217,119,6,.14),transparent 60%);}
-  .start-in{position:relative;display:grid;grid-template-columns:1fr .9fr;gap:54px;align-items:center;}
-  .start-in h2{color:#fff;font-family:"Fraunces",serif;font-weight:400;font-size:clamp(30px,4vw,46px);line-height:1.08;margin:18px 0 0;letter-spacing:-.015em;}
-  .start-in .sub{margin:22px 0 30px;font-size:18px;color:#AEB9C9;max-width:34ch;}
-  .start-in .btn-primary{background:#fff;color:var(--blue-ink);box-shadow:0 16px 36px -14px rgba(0,0,0,.6);}
-  .start-in .btn-primary:hover{box-shadow:0 22px 46px -16px rgba(0,0,0,.7);}
-  .start-note{margin-top:18px;font-size:13.5px;color:#8FA0B6;}
-  .start-form{display:flex;flex-direction:column;gap:14px;background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:26px;}
-  .start-form label{display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:700;color:#9FAABC;}
-  .start-form input{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);border-radius:10px;
-    padding:12px 14px;color:#fff;font-size:15px;font-family:inherit;}
-  .start-form input::placeholder{color:#5F6E82;}
-  .start-form input:focus{outline:none;border-color:var(--blue);background:rgba(255,255,255,.11);}
-  .start-form button{margin-top:4px;justify-content:center;border:none;cursor:pointer;font-family:inherit;font-size:16px;width:100%;}
-  .start-form .free-note{font-size:12.5px;color:#8FA0B6;text-align:center;}
-  .start-thanks{color:#fff;font-size:17px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);
-    border-radius:16px;padding:26px;}
-  .start-thanks b{display:block;font-family:"Fraunces",serif;font-weight:500;font-size:23px;margin-bottom:8px;}
-  @media(max-width:820px){.start-in{grid-template-columns:1fr;gap:36px;}}
-
-  /* ---------------- FOOTER ---------------- */
-  footer{padding:56px 0 50px;border-top:1px solid var(--line);}
-  .foot-in{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;}
-  .foot-brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;color:var(--ink);letter-spacing:-.02em;}
-  .foot-brand .glyph{width:30px;height:30px;border-radius:8px;background:var(--blue-wash);display:grid;place-items:center;color:var(--blue);}
-  .foot-brand .glyph svg{width:16px;height:16px;}
-  .foot-line{font-size:14px;color:var(--muted);margin-top:12px;max-width:42ch;}
-  .foot-legal{font-size:12.5px;color:var(--faint);text-align:right;line-height:1.9;}
-  .foot-legal b{color:var(--muted);font-weight:700;}
-  @media(max-width:680px){.foot-in{flex-direction:column;align-items:flex-start;}.foot-legal{text-align:left;}}
-
-  /* ---------------- reveal ---------------- */
-  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
-  .reveal.in{opacity:1;transform:none;}
-  .reveal[data-d="1"]{transition-delay:.08s;}
-  .reveal[data-d="2"]{transition-delay:.16s;}
-  .reveal[data-d="3"]{transition-delay:.24s;}
-  .reveal[data-d="4"]{transition-delay:.32s;}
-
-  :focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:6px;}
-
-  @media (prefers-reduced-motion: reduce){
-    *{animation:none!important;transition:none!important;scroll-behavior:auto!important;}
-    .reveal{opacity:1;transform:none;}
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease, transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
   }
 </style>
 </head>
 <body>
-<div class="progress" id="progress" aria-hidden="true"></div>
 
-<nav id="nav" aria-label="Principal">
-  <div class="wrap nav-in">
-    <a class="brand" href="#top" aria-label="DeCA, inicio">
-      <span class="glyph" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>
-      </span>
-      DeCA
-    </a>
-    <div class="nav-links">
-      <a href="#faqs">FAQs</a>
+<!-- NAV -->
+<header class="nav">
+  <div class="container nav-inner">
+    <a href="#top" class="brand"><span class="brand-mark"></span>De<span>CA</span></a>
+    <nav class="nav-links">
+      <a href="#dolores">Por qué</a>
       <a href="#como">Cómo funciona</a>
+      <a href="#regla">Ley 9/2025</a>
+      <a href="#faqs">Preguntas</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#empezar" class="ghost-link" style="font-size:.92rem;font-weight:600;color:var(--ink-soft)">Acceder</a>
+      <a href="#empezar" class="btn btn-primary" style="padding:11px 20px">Probar gratis</a>
     </div>
-    <a class="nav-cta" href="#empezar">Probar con una foto</a>
   </div>
-</nav>
+</header>
 
-<main id="top">
+<a id="top"></a>
 
-  <!-- HERO -->
-  <header class="hero">
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <h1 class="serif reveal h1-photo" data-d="1" aria-label="Tus choferes generan el Documento de Control digital con una foto del albarán, de la carta de porte o del documento de control.">Tus choferes generan el Documento de Control digital con <em class="hl-foto">una foto<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="12" cy="12" r="3.5"/><path d="M8 5l1.4-2h5.2L16 5"/></svg></em> <span class="rotator" id="rotator" aria-hidden="true"><span class="rotator-track" id="rotatorTrack"><span class="chip chip-paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>del albarán</span><span class="chip chip-paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>de la carta de porte</span><span class="chip chip-paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>del documento de control</span></span></span></h1>
-        <!--<p class="lede reveal" data-d="2">DeCA lee la imagen, extrae los datos y genera los documentos de transporte digitales con QR.</p>-->
-        <div class="hero-actions reveal" data-d="3">
-          <a class="btn-primary" href="#empezar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            Probar con una foto
-          </a>
-          <a class="link-ghost" href="#como">Ver cómo funciona →</a>
-        </div>
-        <p class="hero-note reveal" data-d="4"><span class="dot"></span> Obligatorio en digital desde otoño de 2026· Ley 9/2025</p>
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="reveal in">
+      <!--<span class="legal-pill"><span class="dot"></span>Obligatorio en digital · otoño 2026 · Ley 9/2025</span>-->
+      <h1>El Documento de Control digital, con <span class="swap">una sola foto</span> del Porte.</h1>
+      <p class="lead">Tu chófer fotografía la carta de porte o Documento de control que ya usa. DeCA la lee, genera el documento electronico con QR. Cumples la ley sin cambiar cómo trabajas.</p>
+      <div class="hero-ctas">
+        <a href="#empezar" class="btn btn-primary">Probar con una foto
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="#como" class="btn btn-ghost">Ver cómo funciona</a>
       </div>
+      <div class="reassure">
+        <span>Sin instalar apps</span>
+        <span>Sin permanencia</span>
+        <span>Acceso gratis</span>
+      </div>
+    </div>
 
-      <div class="phone-stage reveal" data-d="2">
-        <div class="phone">
-          <span class="notch"></span>
-          <div class="phone-screen">
-            <video src="./0630.mp4" poster="./images/deca-ui.png" autoplay muted loop playsinline preload="metadata" aria-label="DeCA en uso: crear el Documento de Control, escanear y firmar desde el móvil."></video>
-          </div>
-          <!--<span class="phone-tag t1"><span class="pin"></span>Propietario de la mercancía</span>-->
-          <!--<span class="phone-tag t2"><span class="pin"></span>Transportista efectivo</span>-->
+    <div class="hero-visual reveal in">
+      <div class="viewfinder">
+        <span class="vf-corner tl"></span><span class="vf-corner tr"></span>
+        <span class="vf-corner bl"></span><span class="vf-corner br"></span>
+      </div>
+      <div class="phone">
+        <div class="phone-screen">
+          <span class="phone-notch"></span>
+          <video class="phone-video" autoplay muted loop playsinline preload="auto">
+            <source src="./DeCA.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <div class="doc-out">
+        <div class="qr">
+          <i></i><i class="o"></i><i></i><i></i><i class="o"></i><i></i><i></i>
+          <i></i><i></i><i class="o"></i><i></i><i></i><i class="o"></i><i></i>
+          <i class="o"></i><i></i><i></i><i class="o"></i><i></i><i></i><i class="o"></i>
+          <i></i><i></i><i class="o"></i><i></i><i class="o"></i><i></i><i></i>
+          <i></i><i class="o"></i><i></i><i></i><i></i><i class="o"></i><i></i>
+          <i class="o"></i><i></i><i></i><i class="o"></i><i></i><i></i><i></i>
+          <i></i><i></i><i class="o"></i><i></i><i></i><i class="o"></i><i></i>
+        </div>
+        <span class="badge">Documento de Control</span>
+        <h4>Generado</h4>
+        <div class="sub">Ref. #2026-0847 · con QR</div>
+        <div class="check">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.2" fill="#1E65EC"/><path d="M5 8.2l2 2 4-4.4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          En regla · Ley 9/2025
         </div>
       </div>
     </div>
-  </header>
+  </div>
+</section>
 
-  <!-- ANCHOR 
-  <section class="anchor wrap" aria-label="Idea central">
-    <div class="spine reveal" aria-hidden="true"></div>
-    <p class="reveal" data-d="1">Le haces una <em>foto</em>. DeCA hace <b>el resto</b>.</p>
-  </section>-->
-
-  <!-- PROBLEMA 
-  <section class="section problem">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow amber reveal">El día a día</span>
-        <h2 class="serif reveal" data-d="1">El papel nunca está cuando el agente lo pide.</h2>
+<!-- BENEFITS STRIP -->
+<section class="benefits">
+  <div class="benefits-inner">
+    <div class="benefits-grid">
+      <div class="benefit reveal">
+        <div class="bic">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h4>Accesible en cualquier momento</h4>
       </div>
-      <div class="problem-body">
-        <div class="problem-prose reveal" data-d="1">
-          <p>Papel, WhatsApp y un Excel. Te funciona. Pero el papel se moja, se traspapela entre cabina, almacén y oficina, y desaparece justo en el control.</p>
-          <p><strong>Ya tienes los datos: en tu Excel, en tu ERP o en tus papeles. DeCA solo les hace una foto.</strong></p>
+      <div class="benefit reveal">
+        <div class="bic">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3a8.5 8.5 0 00-7.4 12.7L3.5 21l5.5-1.4A8.5 8.5 0 1012 3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.8 9.2c0 3 2.2 5.2 5.2 5.2.6 0 1-.5 1-1.1 0-.3-.2-.6-.5-.7l-1.3-.5c-.3-.1-.6 0-.8.2l-.3.4a4 4 0 01-1.8-1.8l.4-.3c.2-.2.3-.5.2-.8l-.5-1.3c-.1-.3-.4-.5-.7-.5-.6 0-1.1.4-1.1 1z" fill="currentColor"/></svg>
         </div>
-        <div class="pain-list reveal" data-d="2" aria-label="Lo que duele">
-          <div class="pain"><b>Miedo a la inspección</b>No encontrar el papel correcto, y arriesgar una sanción.</div>
-          <div class="pain"><b>Tiempos muertos</b>Rellenar, escanear y reescribir datos para facturar.</div>
-          <div class="pain"><b>Sin equipo técnico</b>Necesitas algo que funcione desde el primer día.</div>
+        <h4>Compatible con WhatsApp</h4>
+      </div>
+      <div class="benefit reveal">
+        <div class="bic">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 8h2.5l1.3-2h8.4L17.5 8H20a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.2" stroke="currentColor" stroke-width="1.8"/></svg>
         </div>
+        <h4>Sin cambiar tu forma de trabajar</h4>
+      </div>
+      <div class="benefit reveal">
+        <div class="bic">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 8.2-7 9.4C8 19.2 5 15.4 5 11V6l7-3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 11.5l2.2 2.2L15 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h4>Válido para la Ley 9/2025</h4>
       </div>
     </div>
-  </section>-->
+  </div>
+</section>
 
-  <!-- POR QUÉ -->
-  <section class="section" id="por-que" aria-label="Por qué existe DeCA">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow blue reveal">Por qué</span>
-        <h2 class="serif reveal" data-d="1">DeCA soluciona 3 puntos de fricción en el día a día del transporte.</h2>
+<!-- PAINS -->
+<section class="section pains" id="dolores">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Por qué DeCA</span>
+      <h2>Tres problemas que resuelve una foto.</h2>
+      <p>La forma mas fácil de quitarte de líos, sin pedirte que cambies nada.</p>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card reveal">
+        <div class="pain-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7M12 11v10" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        </div>
+        <!--<span class="pain-tag">Dolor real</span>-->
+        <h3>La mercancía no coincide</h3>
+        <p>El cliente pide una cosa y al llegar no coincide con lo que dijo. Con DeCA queda registrado lo que de verdad se cargó y entregó.</p>
       </div>
-      <div class="why-grid">
-        <div class="why-card reveal" data-d="1"><h4>La mercancía no coincide</h4><p>El cliente pide una cosa pero al llegar no coincide con lo que dijo.</p></div>
-        <div class="why-card reveal" data-d="2"><h4>Te quedas con las firmas del cliente</h4><p>Para futuras reclamaciones.</p></div>
-        <div class="why-card reveal" data-d="3"><h4>No cambias la forma de trabajar</h4><p>DeCA solo necesita una foto de lo que ya haces para operar.</p></div>
+      <div class="pain-card reveal">
+        <div class="pain-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 18c2-4 5-5 8-5s6 1 8 5M12 8a3.5 3.5 0 100-.01M6 20l1.5-2M18 20l-1.5-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <!--<span class="pain-tag">Dolor real</span>-->
+        <h3>Te quedas con las firmas</h3>
+        <p>La firma del cliente queda guardada en el documento, lista para cualquier reclamación futura. Nada de papeles que se pierden en la cabina.</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </div>
+        <!--<span class="pain-tag">Dolor real</span>-->
+        <h3>No cambias cómo trabajas</h3>
+        <p>DeCA solo necesita una foto de lo que ya haces. Sin ERPs nuevos, sin formaciones eternas, sin obligar a tus choferes a aprender otra cosa.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- CÓMO FUNCIONA -->
-  <section class="section" id="como">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow amber reveal">Cómo funciona</span>
-        <h2 class="serif reveal" data-d="1">Tres pasos. Una foto. Listo.</h2>
-        <ul class="perks reveal" data-d="1">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>No hace falta instalar apps</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>No hace falta cambiar tu forma de trabajar</li>
-        </ul>
+<!-- HOW -->
+<section class="section" id="como">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Cómo funciona</span>
+      <h2>Tres pasos. Una foto. Listo.</h2>
+      <p>Del bolsillo del chófer al documento en regla, sin pasar por la oficina.</p>
+    </div>
+    <div class="how-grid">
+      <div class="step shoot reveal">
+        <span class="vfb1"></span><span class="vfb2"></span>
+        <div class="snum">1</div>
+        <h3>Haz la foto</h3>
+        <p>El chófer fotografía la <span class="kbd">carta de porte</span>, el albarán o el documento de control que ya lleva encima.</p>
       </div>
-      <div class="steps">
-        <div class="steps-list">
-          <div class="step own reveal" data-d="1">
-            <span class="num">1</span>
-            <div>
-              <h4>Haz la foto</h4>
-              <p>El chófer hace una foto a la <code class="amberc">carta de porte</code>, al albarán o al documento de control.</p>
-            </div>
-          </div>
-          <div class="step reveal" data-d="1">
-            <span class="num">2</span>
-            <div>
-              <h4>DeCA rellena el formulario</h4>
-              <p>La app escanea la información de la foto y completa el documento sola.</p>
-            </div>
-          </div>
-          <div class="step reveal" data-d="2">
-            <span class="num">3</span>
-            <div>
-              <h4>Documento guardado y listo para enviar</h4>
-              <p>Se queda almacenado en tu cuenta y lo puedes compartir por <code>WhatsApp</code> u otras apps de mensajería.</p>
-            </div>
-          </div>
-        </div>
-        <div class="steps-visual reveal" data-d="1">
-          <div class="ui-detail">
-            <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
-            <div class="shot">
-              <img src="./DeCA App.png" alt="Cómo funciona DeCA App: el chófer hace una foto, DeCA escanea y rellena el formulario, y el documento se guarda y se puede compartir por WhatsApp." loading="lazy" width="1536" height="1024" />
-            </div>
-          </div>
-          <p class="ui-caption"><span class="pin"></span> El documento que genera DeCA: carta de porte electrónica con su QR, lista para la inspección.</p>
-        </div>
+      <div class="step feature reveal">
+        <div class="snum">2</div>
+        <h3>DeCA rellena solo</h3>
+        <p>La app lee la imagen, extrae los datos del envío y completa el documento por ti. Sin teclear, sin transcribir.</p>
+      </div>
+      <div class="step reveal">
+        <div class="snum">3</div>
+        <h3>Guardado y listo</h3>
+        <p>Se archiva en tu cuenta con su QR y lo compartes por <span class="kbd">WhatsApp</span> o donde quieras, en segundos.</p>
       </div>
     </div>
-  </section>
-
-
-  <!-- FAQS -->
-  <section class="section faqs" id="faqs">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow amber reveal">Del webinar del Ministerio</span>
-        <h2 class="serif reveal" data-d="1">Preguntas frecuentes sobre el DCA digital.</h2>
-        <p class="reveal" data-d="1">Respuestas claras, basadas en la normativa y en el webinar del Ministerio de Transportes, sobre la obligación que afecta a todo el transporte público de mercancías por carretera.</p>
-      </div>
-
-      <nav class="faqs-topics reveal" data-d="2" aria-label="Temas de las FAQs">
-        <a href="#faq-g1">Formato y cómo se lleva</a>
-        <a href="#faq-g2">Quién es responsable</a>
-        <a href="#faq-g3">Cuándo se genera y datos</a>
-        <a href="#faq-g4">Casos particulares y exenciones</a>
-        <a href="#faq-g5">Futuro, eFTI y transición</a>
-      </nav>
-
-      <div class="faq-group reveal" data-d="1" id="faq-g1">
-        <div class="faq-group-head"><span class="faq-num">01</span><h3>Qué documento vale y cómo se lleva</h3></div>
-
-        <details class="faq">
-          <summary>¿Me sirve mi albarán como documento de control?</summary>
-          <div class="faq-a">
-            <p>Sí, siempre que ese albarán incorpore un código QR que enlace a un repositorio tuyo desde el que el agente de control pueda descargarlo, y que contenga los datos que exige el artículo 6 de la Orden FOM/2861 (cargador contractual, transportista efectivo, origen, destino, etc.). La idea del sistema es precisamente reutilizar los documentos y datos que ya manejas, no crear papeleo nuevo.</p>
-            <div class="faq-plug">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="#D97706" stroke-width="2" stroke-linecap="round"/></svg>
-              <div>Con <strong>DeCA</strong> conviertes una foto de tu albarán en el PDF del documento de control, aprovechando los datos que ya tienes. <a href="#empezar">Ver cómo funciona →</a></div>
-            </div>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>¿Dónde están los requisitos para digitalizar mi carta de porte?</summary>
-          <div class="faq-a">
-            <p>Conviene aclarar una cosa: la obligación es digitalizar el documento de control, no la carta de porte. Si quieres que tu carta de porte digital sirva como documento de control, además de sus datos habituales debe cumplir los requisitos de la Orden FOM/2861/2012 (mercancías), la Orden FOM/1230/2013 (hoja de ruta) y la Resolución de 5 de junio de 2026.</p>
-            <p>Cumpliendo esas condiciones, un mismo documento te vale para las dos cosas y no necesitas duplicar papeleo.</p>
-            <div class="faq-plug">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="#D97706" stroke-width="2" stroke-linecap="round"/></svg>
-              <div><strong>DeCA</strong> parte de la carta de porte que ya usas y genera el documento de control digital a partir de una foto. <a href="#empezar">Probar →</a></div>
-            </div>
-            <p class="faq-ref">Ref.: la obligación es sobre el documento de control, no sobre la carta de porte.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>¿Puedo llevar el documento en papel si lleva QR?</summary>
-          <div class="faq-a">
-            <p>Sí. Puedes llevarlo en papel con su QR, en un dispositivo digital o en ambos formatos a la vez. El papel tiene la ventaja de no depender de la cobertura, pero el inconveniente de que no recoge las modificaciones que sufra el envío después de imprimirlo.</p>
-            <p>Por eso, si los datos cambian a menudo, es más seguro el formato digital: el documento va descargado en el dispositivo del conductor, así que no se descarga en el momento del control y no depende de que haya cobertura justo entonces.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>¿Hay que llevar dos documentos (uno del cargador y otro del transportista) o solo uno?</summary>
-          <div class="faq-a">
-            <p>Debe existir un único documento de control, no uno por cada parte. Cargador y transportista acuerdan libremente quién lo genera y cómo se hace llegar al conductor, que lleva a bordo una copia obtenida del repositorio.</p>
-            <p>¿Y si el cargador no lo envía? Como la responsabilidad es solidaria, si una parte no colabora ambas siguen expuestas a sanción. Lo habitual es pactar quién lo emite: uno de los dos, de mutuo acuerdo, o un tercero contratado.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>¿Cada parte necesita su propio repositorio o basta con uno?</summary>
-          <div class="faq-a">
-            <p>Basta con uno. Como el documento de control es único, su QR apunta a un solo repositorio, y cargador y transportista acuerdan de quién es: de uno de ellos o de un tercero, como un proveedor de software.</p>
-            <p>No es necesario que cada figura mantenga su propio repositorio; el QR debe llevar a un único destino, no a varios.</p>
-          </div>
-        </details>
-      </div>
-
-      <div class="faq-group reveal" data-d="1" id="faq-g2">
-        <div class="faq-group-head"><span class="faq-num">02</span><h3>Quién está obligado y responsabilidades</h3></div>
-
-        <details class="faq">
-          <summary>¿Quién es el cargador contractual y quién está obligado al documento?</summary>
-          <div class="faq-a">
-            <p>El transportista efectivo es la empresa cuyo vehículo se detiene en el control. El cargador contractual es quien ha contratado directamente a ese transportista, es decir, el eslabón inmediatamente anterior en la cadena, no necesariamente el origen de toda la operación.</p>
-            <p>Ambos son responsables solidarios de que exista el documento de control: si falta, se sanciona a los dos. Cuando lo que falla es un dato concreto, el artículo 7 de la Orden FOM/2861 reparte la responsabilidad según quién conoce cada dato (por ejemplo, la matrícula corresponde al transportista efectivo).</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>Si el cliente contrata el transporte y nosotros solo cargamos, ¿quién formaliza el documento?</summary>
-          <div class="faq-a">
-            <p>El obligado es el transportista efectivo junto con el cargador contractual, que aquí es el cliente que contrató el transporte, aunque la carga se realice en las instalaciones del expedidor y la mercancía sea de otra empresa. Si el expedidor no es cargador contractual, no tiene responsabilidad sobre el documento de control.</p>
-            <p>La norma tampoco obliga al expedidor a comprobar que el documento existe ni a impedir la salida del vehículo. Puede incorporar esa verificación a sus procesos internos de calidad si lo desea, pero es voluntario.</p>
-          </div>
-        </details>
-      </div>
-
-      <div class="faq-group reveal" data-d="1" id="faq-g3">
-        <div class="faq-group-head"><span class="faq-num">03</span><h3>Cuándo se genera y datos del envío</h3></div>
-
-        <details class="faq">
-          <summary>¿Necesito el documento antes de recoger la carga, si aún no conozco la mercancía ni el destino?</summary>
-          <div class="faq-a">
-            <p>No puedes generar el documento hasta que conozcas los datos del envío. Si al dirigirte al punto de carga ya sabes qué vas a transportar, puedes emitirlo desde ese momento; si no, lo generas al cargar, que es cuando esos datos se conocen.</p>
-            <p>El momento límite para tenerlo es el inicio del servicio, una vez cargado el vehículo: ahí, quien carga sabe qué se está cargando, así que los datos siempre existen a más tardar en ese instante.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>¿Qué hago si en el punto de carga no hay cobertura o no conozco la mercancía hasta llegar?</summary>
-          <div class="faq-a">
-            <p>Si no hay cobertura en el punto de carga, puedes generar el documento en papel con su QR en ese momento, o emitirlo antes y enviárselo al conductor (por WhatsApp, correo…) para actualizarlo al salir de la zona sin cobertura.</p>
-            <p>Y si no conoces la mercancía hasta cargar, el documento se genera en ese momento: el instante límite para emitirlo es la propia carga del vehículo, cuando ya se conocen todos los datos.</p>
-            <div class="faq-plug">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="#D97706" stroke-width="2" stroke-linecap="round"/></svg>
-              <div>Con <strong>DeCA</strong> generas el documento en el propio punto de carga a partir de una foto y se lo haces llegar al conductor al momento. <a href="#empezar">Ver cómo →</a></div>
-            </div>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>Si no puedo conocer el peso antes de cargar, ¿qué magnitud indico?</summary>
-          <div class="faq-a">
-            <p>La Orden FOM/2861 permite que, cuando no se pueda determinar el peso, se use otra magnitud para expresar la mercancía transportada: volumen, número de palés, masa máxima o medidas de capacidad, según la naturaleza de la carga.</p>
-            <p>En general, lo que ya vengas indicando en tu documento de control actual es lo que debes trasladar a su versión digital.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>Si el envío se modifica, ¿hay que generar un QR nuevo? ¿Y actualizar el papel?</summary>
-          <div class="faq-a">
-            <p>Según el punto quinto de la Resolución de 5 de junio de 2026, ante una modificación puedes mantener el mismo QR o generar uno nuevo. En ambos casos debes hacer llegar al transportista el PDF actualizado.</p>
-            <p>Si lleva dispositivo digital, se le envía (por WhatsApp, correo…); si va en papel, hay que hacerle llegar el papel actualizado, lo cual es más complicado. Por eso, si prevés modificaciones frecuentes, es más práctico el formato digital.</p>
-          </div>
-        </details>
-      </div>
-
-      <div class="faq-group reveal" data-d="1" id="faq-g4">
-        <div class="faq-group-head"><span class="faq-num">04</span><h3>Casos particulares y exenciones</h3></div>
-
-        <details class="faq">
-          <summary>Tramo troncal a un centro de distribución y luego reparto final: ¿un DECA o varios?</summary>
-          <div class="faq-a">
-            <p>Como el cargador y el transportista son los mismos en toda la operación, puedes elegir: un único documento de control que recoja el tramo desde la planta hasta el centro de distribución y también el reparto final, o bien un documento por tramo. En el tramo de reparto, puedes incluir varios destinatarios en las distintas líneas del mismo documento.</p>
-            <div class="faq-plug">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="#D97706" stroke-width="2" stroke-linecap="round"/></svg>
-              <div><strong>DeCA</strong> te deja generar un documento por tramo o uno único a partir de tus albaranes, sin rehacer nada. <a href="#empezar">Probar →</a></div>
-            </div>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>En transporte privado complementario, ¿necesito el documento de control?</summary>
-          <div class="faq-a">
-            <p>No. El documento de control, también en su versión digital, es obligatorio solo para el transporte público, no para el privado complementario, aunque entregues a terceros.</p>
-            <p>Eso sí, debes llevar a bordo la documentación que acredita que estás realizando un transporte privado complementario.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>Transporte internacional con cambio de camión: ¿necesito documento para el tramo nacional?</summary>
-          <div class="faq-a">
-            <p>Si hay un primer tramo puramente nacional con un vehículo (por ejemplo, una recogida y traslado a tu base) y luego un cambio de camión para salir al extranjero, ese tramo nacional necesita documento de control digital.</p>
-            <p>El tramo internacional se ampara en el CMR, que es lo que se presenta en carretera tanto en España hasta cruzar la frontera como fuera. Si el mismo vehículo hace todo el recorrido internacional sin ese tramo nacional previo, basta con el CMR desde el origen.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>En una exportación marítima, ¿necesito documento para llevar la mercancía al puerto?</summary>
-          <div class="faq-a">
-            <p>Sí. El tramo por carretera entre la planta española y el puerto necesita documento de control digital, con su QR que lleve al repositorio y su PDF.</p>
-            <p>Puedes apoyarte en los documentos propios del transporte marítimo que reflejen ese envío, pero el documento debe reunir las características del documento de control digital.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>¿Cuándo está exento el transporte de paquetería?</summary>
-          <div class="faq-a">
-            <p>La Orden FOM/2861 exime a los servicios de paquetería y similares de recogida y reparto: los que tienen varios puntos de recogida y entrega, un número reducido de bultos y fácilmente manipulables por una persona sin más ayuda que máquinas o herramientas del propio vehículo.</p>
-            <p>Si hoy realizas ese transporte sin documento de control, no necesitas la versión digital, porque no estás obligado a llevar el documento.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>En última milla con palets completos, ¿estoy obligado al documento de control digital?</summary>
-          <div class="faq-a">
-            <p>Depende de si hoy ya estás exento del documento de control administrativo, por ejemplo, por el artículo 2.d de la Orden FOM/2861. Si actualmente realizas ese transporte sin documento de control, no necesitas su versión digital, porque la obligación no te alcanza.</p>
-            <p>Conviene revisar tu caso concreto frente a los supuestos de exención de la norma.</p>
-          </div>
-        </details>
-      </div>
-
-      <div class="faq-group reveal" data-d="1" id="faq-g5">
-        <div class="faq-group-head"><span class="faq-num">05</span><h3>Futuro, eFTI y transición</h3></div>
-
-        <details class="faq">
-          <summary>¿El documento de control digital solo valdrá menos de un año, hasta eFTI?</summary>
-          <div class="faq-a">
-            <p>No exactamente. A partir de julio de 2027, las empresas podrán —si quieren— aportar los datos del envío mediante eFTI (a través de plataformas certificadas), y las autoridades estarán obligadas a aceptarlos; pero es una opción, no una obligación.</p>
-            <p>Para quien dé ese salto, el documento de control será una solución provisional; para quien no, seguirá siendo la vía válida, sin fecha de caducidad. El ponente apuntó, como opinión personal, que con el tiempo todo tenderá hacia eFTI.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>¿Tengo que usar una aplicación certificada para el documento de control?</summary>
-          <div class="faq-a">
-            <p>No. No existe una certificación oficial de aplicaciones para el documento de control digital, porque técnicamente es sencillo: un QR que lleva a una URL desde la que se descarga el PDF.</p>
-            <p>La certificación de plataformas sí existirá, pero para el entorno eFTI, que es un paso posterior y más complejo.</p>
-          </div>
-        </details>
-
-        <details class="faq">
-          <summary>¿Sigue existiendo el código numérico para subir el PDF a la web del ministerio?</summary>
-          <div class="faq-a">
-            <p>No. Esa opción existía en la resolución anterior, pero se ha eliminado porque complicaba el proceso (registro en la sede electrónica, gestión de altas…).</p>
-            <p>Ahora el repositorio no es del ministerio, sino del cargador, del transportista o de un tercero, y el acceso se hace mediante el QR del propio documento.</p>
-          </div>
-        </details>
-      </div>
-
-      <p class="faq-ref reveal" style="margin-top:36px;">Información orientativa basada en la Orden FOM/2861/2012, la Orden FOM/1230/2013, la Resolución de 5 de junio de 2026 y las respuestas del webinar del Ministerio de Transportes. Para tu caso concreto, consulta el texto de las normas.</p>
+    <div class="how-note reveal">
+      <span>No hace falta instalar apps</span>
+      <span>No cambias tu forma de trabajar</span>
+      <span>Documento con QR listo para la inspección</span>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- BENEFICIOS
-  <section class="section benefits">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow amber reveal">Para una empresa familiar</span>
-        <h2 class="serif reveal" data-d="1">Menos papel. Menos sustos. Más ruta.</h2>
-      </div>
-      <div class="ben-rows">
-        <div class="ben-row reveal" data-d="1">
-          <h4>Tranquilidad en carretera</h4>
-          <p>El documento, siempre en el móvil del conductor y en un QR.</p>
-        </div>
-        <div class="ben-row reveal" data-d="1">
-          <h4>Cero tecleo</h4>
-          <p>Una foto y los datos ya están dentro. Sin reescribir para facturar.</p>
-        </div>
-        <div class="ben-row reveal" data-d="2">
-          <h4>Cumplir sin proyecto a medida</h4>
-          <p>Sin IT, sin integraciones, sin meses de implantación.</p>
-        </div>
-        <div class="ben-row reveal" data-d="2">
-          <h4>Tu forma de trabajar, intacta</h4>
-          <p>Cambias el papel, no tus rutas ni tus clientes.</p>
+<!-- COMPLIANCE / AUTHORITY -->
+<section class="section regla" id="regla">
+  <div class="container regla-grid">
+    <div class="reveal">
+      <span class="eyebrow">Ley 9/2025 · desde otoño 2026</span>
+      <h2>El documento de control en digital deja de ser opcional.</h2>
+      <p class="big">Todo el transporte público de mercancías por carretera tendrá que llevar el documento de control en digital, con su QR. DeCA te deja cumplir aprovechando los documentos que ya manejas.</p>
+      <ul class="check-list">
+        <li><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#C67100"/><path d="M6 10.3l2.5 2.5L14 7" stroke="#001A3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Genera el QR que enlaza al repositorio del documento, tal como exige la norma.</li>
+        <li><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#C67100"/><path d="M6 10.3l2.5 2.5L14 7" stroke="#001A3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Reutiliza los datos de tu albarán: no creas papeleo nuevo, digitalizas el que ya tienes.</li>
+        <li><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#C67100"/><path d="M6 10.3l2.5 2.5L14 7" stroke="#001A3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Válido en el móvil del conductor, descargado, sin depender de la cobertura en el control.</li>
+      </ul>
+    </div>
+    <div class="authority reveal">
+      <div class="qmark">“</div>
+      <p>Técnicamente es sencillo: un QR que lleva a una URL desde la que se descarga el PDF. No existe una certificación oficial de aplicaciones para el documento de control digital.</p>
+      <div class="src">— Idea del webinar del Ministerio de Transportes sobre el DCA digital</div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faqs">
+  <div class="container">
+    <div class="section-head reveal" style="margin-left:auto;margin-right:auto;text-align:center">
+      <span class="eyebrow" style="justify-content:center">Del webinar del Ministerio</span>
+      <h2>Preguntas frecuentes sobre el DCA digital</h2>
+      <p>Respuestas claras, basadas en la normativa y en el webinar del Ministerio de Transportes.</p>
+    </div>
+    <div class="faq-wrap">
+      <details class="faq reveal">
+        <summary>¿Me sirve mi albarán como documento de control?<span class="plus"></span></summary>
+        <p>Sí, siempre que incorpore un código QR que enlace a un repositorio tuyo del que el agente pueda descargarlo, y que contenga los datos que exige la Orden FOM/2861. La idea es reutilizar los documentos que ya manejas, no crear papeleo nuevo. Con DeCA conviertes una foto de tu albarán en el PDF del documento de control.</p>
+      </details>
+      <details class="faq reveal">
+        <summary>¿Puedo llevar el documento en papel si lleva QR?<span class="plus"></span></summary>
+        <p>Sí: en papel con su QR, en digital o en ambos. El papel no depende de la cobertura, pero no recoge las modificaciones posteriores. Si los datos cambian a menudo, el digital es más seguro: va descargado en el dispositivo del conductor, así que no depende de que haya cobertura en el momento del control.</p>
+      </details>
+      <details class="faq reveal">
+        <summary>¿Necesito una aplicación certificada?<span class="plus"></span></summary>
+        <p>No. No existe una certificación oficial de aplicaciones para el documento de control digital porque técnicamente es sencillo: un <span class="kbd">QR</span> que lleva a una URL desde la que se descarga el PDF. La certificación de plataformas existirá, pero para el entorno eFTI, que es un paso posterior.</p>
+      </details>
+      <details class="faq reveal">
+        <summary>¿Qué hago si en el punto de carga no hay cobertura?<span class="plus"></span></summary>
+        <p>Puedes generar el documento en papel con su QR en ese momento, o emitirlo antes y hacérselo llegar al conductor por WhatsApp o correo para actualizarlo al salir de la zona sin cobertura. Con DeCA generas el documento en el propio punto de carga a partir de una foto.</p>
+      </details>
+      <details class="faq reveal">
+        <summary>¿Quién está obligado, el cargador o el transportista?<span class="plus"></span></summary>
+        <p>Ambos son responsables solidarios de que exista el documento: si falta, se sanciona a los dos. Debe existir un único documento de control, y cargador y transportista acuerdan libremente quién lo genera y cómo llega al conductor.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section cta" id="empezar">
+  <div class="container">
+    <div class="cta-card reveal">
+      <div>
+        <h2>Pruébala gratis.</h2>
+        <p>Déjanos tus datos y te damos acceso a DeCA sin coste, sin permanencias ni mínimos. Te contactamos en menos de 24&nbsp;h.</p>
+        <div class="reassure">
+          <span>Acceso gratuito</span>
+          <span>Sin tarjeta</span>
+          <span>Sin permanencia</span>
         </div>
       </div>
-    </div>
-  </section>-->
-
-  <!-- EMPEZAR -->
-  <section class="section" id="empezar">
-    <div class="wrap">
-      <div class="start-card">
-        <div class="start-in">
-          <div>
-            <span class="eyebrow reveal" style="color:#8FA0B6;">Empezar</span>
-            <h2 class="reveal" data-d="1">Pruébala gratis.</h2>
-            <p class="sub reveal" data-d="2">Déjanos tus datos y te damos acceso a DeCA sin coste, sin permanencias ni mínimos.</p>
-            <p class="start-note reveal" data-d="3">Te contactamos en menos de 24h para darte acceso a la app.</p>
-          </div>
-          <div class="reveal" data-d="2">
-            <form class="start-form" id="leadForm" aria-label="Solicitar acceso gratuito a DeCA">
-              <label>Nombre y apellidos<input type="text" name="nombre" required autocomplete="name" /></label>
-              <label>Empresa<input type="text" name="empresa" required autocomplete="organization" /></label>
-              <label>Correo electrónico<input type="email" name="email" required autocomplete="email" /></label>
-              <label>Teléfono<input type="tel" name="telefono" autocomplete="tel" /></label>
-              <button type="submit" class="btn-primary">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                Pruébala gratis
-              </button>
-              <span class="free-note">Acceso gratuito · Sin tarjeta · Sin permanencia</span>
-            </form>
-            <div class="start-thanks" id="leadThanks" hidden>
-              <b>¡Gracias!</b>
-              Hemos recibido tus datos. Te escribimos en breve para darte acceso a DeCA.
-            </div>
-          </div>
+      <div>
+        <div class="form" id="decaForm">
+          <input type="text" placeholder="Nombre y apellidos" aria-label="Nombre y apellidos">
+          <input type="text" placeholder="Empresa" aria-label="Empresa">
+          <input type="email" placeholder="Correo electrónico" aria-label="Correo electrónico">
+          <input type="tel" placeholder="Teléfono" aria-label="Teléfono">
+          <button class="btn" type="button" onclick="decaSubmit()">Probar con una foto →</button>
         </div>
+        <div class="form-ok" id="formOk">✓ ¡Recibido! Te escribimos en menos de 24&nbsp;h para darte acceso a DeCA.</div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-</main>
-
-<footer>
-  <div class="wrap foot-in">
-    <div>
-      <div class="foot-brand">
-        <span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
-        DeCA
+<!-- FOOTER -->
+<footer class="foot">
+  <div class="container">
+    <div class="foot-top">
+      <div>
+        <a href="#top" class="brand">De<span>CA</span></a>
+        <p class="foot-desc">Documento de Control Administrativo, en digital. Pensado para empresas familiares de transporte que quieren cumplir sin complicarse.</p>
       </div>
-      <p class="foot-line">Documento de Control Administrativo, en digital. Para empresas familiares de transporte.</p>
+      <div class="foot-legal">
+        <strong>Marco legal</strong>
+        Orden FOM/2861/2012, de 13 de diciembre<br>
+        Ley 9/2025, de 3 de diciembre, de Movilidad Sostenible<br>
+        Resolución de 5 de junio de 2026 · BOE-A-2026-12784
+      </div>
     </div>
-    <div class="foot-legal">
-      <b>Marco legal</b><br/>
-      Orden FOM/2861/2012, de 13 de diciembre<br/>
-      Ley 9/2025, de 3 de diciembre, de Movilidad Sostenible<br/>
-      Resolución de 5 de junio de 2026 · BOE-A-2026-12784
-    </div>
+    <div class="foot-bottom">© 2026 DeCA. Información orientativa; para tu caso concreto, consulta el texto de las normas.</div>
   </div>
 </footer>
 
 <script>
-  // progreso de scroll
-  var progress = document.getElementById('progress');
-  var nav = document.getElementById('nav');
-  function onScroll(){
-    var h = document.documentElement;
-    var scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
-    progress.style.width = (scrolled * 100) + '%';
-    if(h.scrollTop > 12){ nav.classList.add('stuck'); } else { nav.classList.remove('stuck'); }
-  }
-  document.addEventListener('scroll', onScroll, {passive:true});
-  onScroll();
-
-  // reveal on scroll
-  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var els = document.querySelectorAll('.reveal');
-  if(prefersReduced || !('IntersectionObserver' in window)){
-    els.forEach(function(el){ el.classList.add('in'); });
-  } else {
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-      });
-    }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
-    els.forEach(function(el){ io.observe(el); });
-  }
-
-  // rotador de fuentes (Excel / ERP / papel) — ancho fijo, va en mitad de la frase
-  (function(){
-    var rotator = document.getElementById('rotator');
-    var track = document.getElementById('rotatorTrack');
-    if(!rotator || !track) return;
-    var chips = Array.prototype.slice.call(track.children);
-    if(prefersReduced || chips.length < 2) return; // el fallback CSS muestra los tres
-    var i = 0;
-    function fix(){
-      track.style.transition = 'none';
-      var h = chips[0].offsetHeight, w = 0;
-      chips.forEach(function(c){ if(c.offsetWidth > w) w = c.offsetWidth; });
-      rotator.style.height = h + 'px';
-      rotator.style.width = w + 'px';
-      track.style.transform = 'translateY(' + (-i * h) + 'px)';
-      requestAnimationFrame(function(){ track.style.transition = ''; });
-    }
-    function go(idx){
-      var h = chips[0].offsetHeight;
-      track.style.transform = 'translateY(' + (-idx * h) + 'px)';
-    }
-    if(document.fonts && document.fonts.ready){ document.fonts.ready.then(fix); }
-    setTimeout(fix, 80);
-    window.addEventListener('resize', fix);
-    setInterval(function(){ i = (i + 1) % chips.length; go(i); }, 2200);
-  })();
-
-  // formulario de lead: envía a la Google Sheet vía Apps Script Web App
-  // 1) Crea una Google Sheet, Extensiones > Apps Script, pega el código de sheet-lead-script.gs.txt
-  // 2) Implementar > Nueva implementación > Aplicación web > Ejecutar como: yo > Acceso: cualquier usuario
-  // 3) Pega aquí la URL /exec que te da el despliegue
-  var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynLXBOw7Kt6LQnAAfLbfGINtXwmb5RbAyY1XObWZx-J8JCGfaejZM2jZtmZNznq7gp0g/exec';
-  var leadForm = document.getElementById('leadForm');
-  if(leadForm){
-    leadForm.addEventListener('submit', function(e){
-      e.preventDefault();
-      fetch(GOOGLE_SCRIPT_URL, {method:'POST', mode:'no-cors', body:new FormData(leadForm)})
-        .catch(function(){})
-        .then(function(){
-          leadForm.hidden = true;
-          document.getElementById('leadThanks').hidden = false;
-        });
-    });
+  // scroll reveal
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
+  document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
+  // form (front-end only demo)
+  function decaSubmit(){
+    document.getElementById('decaForm').style.display='none';
+    document.getElementById('formOk').classList.add('show');
   }
 </script>
 </body>
