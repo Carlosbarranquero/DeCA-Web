@@ -298,8 +298,7 @@
   .form input:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:transparent}
   .form .btn{justify-content:center;width:100%;background:var(--amber);color:var(--ink);margin-top:4px}
   .form .btn:hover{transform:translateY(-2px)}
-  .form-ok{display:none;background:rgba(30,101,236,.22);border:1px solid var(--green);border-radius:12px;padding:16px;font-size:.95rem}
-  .form-ok.show{display:block}
+  .form-ok{background:rgba(30,101,236,.22);border:1px solid var(--green);border-radius:12px;padding:16px;font-size:.95rem}
   @media(max-width:820px){.cta-card{grid-template-columns:1fr;padding:36px 26px;gap:30px}}
 
   /* ---------- FOOTER ---------- */
@@ -451,8 +450,8 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 18c2-4 5-5 8-5s6 1 8 5M12 8a3.5 3.5 0 100-.01M6 20l1.5-2M18 20l-1.5-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <!--<span class="pain-tag">Dolor real</span>-->
-        <h3>Te quedas con las firmas</h3>
-        <p>La firma del cliente queda guardada en el documento, lista para cualquier reclamación futura. Nada de papeles que se pierden en la cabina.</p>
+        <h3>Te quedas con las firmas manuscritas</h3>
+        <p>DeCA app genera el documento electronico, tu conservas la firma del cliente, para cualquier reclamación futura.</p>
       </div>
       <div class="pain-card reveal">
         <div class="pain-icon">
@@ -560,7 +559,7 @@
     <div class="cta-card reveal">
       <div>
         <h2>Pruébala gratis.</h2>
-        <p>Déjanos tus datos y te damos acceso a DeCA sin coste, sin permanencias ni mínimos. Te contactamos en menos de 24&nbsp;h.</p>
+        <p>Te damos acceso a DeCA sin coste, sin permanencias ni mínimos.</p>
         <div class="reassure">
           <span>Acceso gratuito</span>
           <span>Sin tarjeta</span>
@@ -568,14 +567,14 @@
         </div>
       </div>
       <div>
-        <div class="form" id="decaForm">
-          <input type="text" placeholder="Nombre y apellidos" aria-label="Nombre y apellidos">
-          <input type="text" placeholder="Empresa" aria-label="Empresa">
-          <input type="email" placeholder="Correo electrónico" aria-label="Correo electrónico">
-          <input type="tel" placeholder="Teléfono" aria-label="Teléfono">
-          <button class="btn" type="button" onclick="decaSubmit()">Probar con una foto →</button>
-        </div>
-        <div class="form-ok" id="formOk">✓ ¡Recibido! Te escribimos en menos de 24&nbsp;h para darte acceso a DeCA.</div>
+        <form class="form" id="leadForm">
+          <input type="text" name="nombre" placeholder="Nombre y apellidos" aria-label="Nombre y apellidos" required>
+          <input type="text" name="empresa" placeholder="Empresa" aria-label="Empresa" required>
+          <input type="email" name="email" placeholder="Correo electrónico" aria-label="Correo electrónico" required>
+          <input type="tel" name="telefono" placeholder="Teléfono" aria-label="Teléfono">
+          <button class="btn" type="submit">Probar con una foto →</button>
+        </form>
+        <div class="form-ok" id="leadThanks" hidden>✓ ¡Recibido! Te escribimos lo antes posible para darte acceso a DeCA.</div>
       </div>
     </div>
   </div>
@@ -604,10 +603,19 @@
   // scroll reveal
   const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
   document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
-  // form (front-end only demo)
-  function decaSubmit(){
-    document.getElementById('decaForm').style.display='none';
-    document.getElementById('formOk').classList.add('show');
+  // formulario de lead: envía a la Google Sheet vía Apps Script Web App
+  var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynLXBOw7Kt6LQnAAfLbfGINtXwmb5RbAyY1XObWZx-J8JCGfaejZM2jZtmZNznq7gp0g/exec';
+  var leadForm = document.getElementById('leadForm');
+  if(leadForm){
+    leadForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      fetch(GOOGLE_SCRIPT_URL, {method:'POST', mode:'no-cors', body:new FormData(leadForm)})
+        .catch(function(){})
+        .then(function(){
+          leadForm.hidden = true;
+          document.getElementById('leadThanks').hidden = false;
+        });
+    });
   }
 </script>
 </body>
