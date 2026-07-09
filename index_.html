@@ -286,6 +286,7 @@
   }
   .cta-card h2{font-size:clamp(1.8rem,3.4vw,2.5rem);color:#fff;margin-bottom:14px;position:relative}
   .cta-card p{color:rgba(255,255,255,.75);margin-bottom:20px;position:relative}
+  .cta-urgency{color:var(--amber);font-weight:600;margin-bottom:8px}
   .cta-card .reassure{color:rgba(255,255,255,.6)}
   .cta-card .reassure span::before{color:var(--amber)}
   .form{position:relative;display:grid;gap:12px}
@@ -369,7 +370,7 @@
     <div class="phone">
           <span class="notch"></span>
           <div class="phone-screen">
-            <video src="./DeCA.mp4" autoplay muted loop playsinline preload="metadata" aria-label="DeCA en uso: crear el Documento de Control, escanear y firmar desde el móvil."></video>
+            <video src="./DeCA.mp4" poster="./images/deca-ui.png" autoplay muted loop playsinline preload="metadata" aria-label="DeCA en uso: crear el Documento de Control, escanear y firmar desde el móvil."></video>
           </div>
           <!--<span class="phone-tag t1"><span class="pin"></span>Propietario de la mercancía</span>-->
           <!--<span class="phone-tag t2"><span class="pin"></span>Transportista efectivo</span>-->
@@ -559,6 +560,7 @@
     <div class="cta-card reveal">
       <div>
         <h2>Pruébala gratis.</h2>
+        <p class="cta-urgency">Disponible solo para registros anteriores al 17 julio.</p>
         <p>Déjanos tus datos y te damos acceso a DeCA sin coste, sin permanencias ni mínimos. Te contactamos en menos de 24&nbsp;h.</p>
         <div class="reassure">
           <span>Acceso gratuito</span>
